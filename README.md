@@ -7,6 +7,9 @@ Eine Engine rechnet in normalem Tempo und schreibt jeden Zwischenschritt in eine
 Playback-Controller spielt ihn ab wie ein Video: abspielen, anhalten, Station für Station vor und
 zurück, Tempo wählen.
 
+**Online ausprobieren:** https://borisbrue.github.io/token-theater/ (lädt beim ersten Start
+von GPT-2 rund 350 MB Gewichte; danach aus dem Browser-Cache).
+
 ## Was man sieht
 
 - **Tokenizer:** GPT-2-BPE mit jedem Merge-Schritt.
