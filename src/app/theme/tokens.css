@@ -1,0 +1,67 @@
+/* Aurora-Designsprache (ADR-0001). Einzige Stelle mit Farbwerten (CON-0007 T-03). */
+:root {
+  color-scheme: dark;
+
+  --tt-bg: #070b14;
+  --tt-surface: #0d1424;
+  --tt-surface-2: #121c31;
+  --tt-line: #1f2b45;
+  --tt-line-strong: #2a3a5e;
+  --tt-text: #e6f1ff;
+  --tt-text-soft: #d4e2f7;
+  --tt-text-muted: #8ea3c4;
+  --tt-mint: #34f5a4;
+  --tt-cyan: #2ee6e6;
+  --tt-blue: #4c7dff;
+  --tt-blue-deep: #1b3a8a;
+  --tt-violet: #8b5cf6;
+  --tt-error: #ff5c8a;
+  --tt-on-accent: #04131a;
+
+  /* Glow nur am aktiven Element, abgeleitet aus den Basis-Tokens. */
+  --tt-glow-mint: color-mix(in srgb, var(--tt-mint) 40%, transparent);
+  --tt-glow-cyan: color-mix(in srgb, var(--tt-cyan) 38%, transparent);
+  --tt-tint-mint: color-mix(in srgb, var(--tt-mint) 14%, transparent);
+  --tt-tint-cyan: color-mix(in srgb, var(--tt-cyan) 14%, transparent);
+  --tt-tint-error: color-mix(in srgb, var(--tt-error) 16%, transparent);
+  --tt-panel: color-mix(in srgb, var(--tt-surface) 88%, transparent);
+
+  --tt-gradient-aurora: linear-gradient(
+    100deg,
+    var(--tt-mint) 0%,
+    var(--tt-cyan) 50%,
+    var(--tt-blue) 100%
+  );
+  --tt-gradient-sky: radial-gradient(
+      ellipse 60% 340px at 15% 0%,
+      color-mix(in srgb, var(--tt-mint) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 300px at 70% 0%,
+      color-mix(in srgb, var(--tt-cyan) 14%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 40% 280px at 100% 6%,
+      color-mix(in srgb, var(--tt-violet) 16%, transparent),
+      transparent 70%
+    ),
+    var(--tt-bg);
+  --tt-gradient-data: linear-gradient(
+    90deg,
+    var(--tt-surface) 0%,
+    var(--tt-blue-deep) 35%,
+    var(--tt-cyan) 72%,
+    var(--tt-mint) 100%
+  );
+
+  --tt-font-display: 'Space Grotesk', system-ui, sans-serif;
+  --tt-font-body: 'Inter Variable', system-ui, sans-serif;
+  --tt-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --tt-radius-s: 8px;
+  --tt-radius-m: 12px;
+  --tt-radius-l: 18px;
+  --tt-control: 44px;
+}

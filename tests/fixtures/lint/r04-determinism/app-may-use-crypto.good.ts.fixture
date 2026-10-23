@@ -1,0 +1,3 @@
+// @lint-target: src/app/fixture.ts
+// @lint-expect: none
+export const newTraceId = (): string => crypto.randomUUID();

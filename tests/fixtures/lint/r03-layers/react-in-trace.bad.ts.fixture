@@ -1,0 +1,5 @@
+// @lint-target: src/trace/fixture.ts
+// @lint-expect: no-restricted-imports | @typescript-eslint/no-restricted-imports
+import { useState } from 'react';
+
+export const hook = useState;

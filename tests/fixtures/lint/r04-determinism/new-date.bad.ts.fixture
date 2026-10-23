@@ -1,0 +1,3 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: no-restricted-properties | no-restricted-syntax | no-restricted-globals
+export const now = (): Date => new Date();

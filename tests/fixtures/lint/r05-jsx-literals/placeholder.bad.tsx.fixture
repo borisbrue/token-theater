@@ -1,0 +1,5 @@
+// @lint-target: src/views/fixture-input.tsx
+// @lint-expect: react/jsx-no-literals | local/jsx-no-literals
+export function Field() {
+  return <input placeholder="Text eingeben" />;
+}

@@ -1,0 +1,21 @@
+// @lint-target: src/views/fixture-field.tsx
+// @lint-expect: none
+export function Field({ label }: { label: string }) {
+  return (
+    <label htmlFor="prompt" className="field" data-kind="prompt">
+      {label}
+      <input
+        id="prompt"
+        name="prompt"
+        type="text"
+        inputMode="text"
+        autoComplete="off"
+        accept=".json,application/json"
+        role="textbox"
+      />
+      <span role="heading" aria-level={2}>
+        {label}
+      </span>
+    </label>
+  );
+}

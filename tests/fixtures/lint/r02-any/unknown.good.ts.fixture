@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: none
+export function toNumber(value: unknown): number {
+  return Number(value);
+}

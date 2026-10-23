@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "id": "trace-remote-top3",
+  "createdAt": "2026-10-22T08:00:00Z",
+  "engine": {
+    "kind": "fixture",
+    "model": "remote-top3",
+    "capabilities": [
+      "tokenize",
+      "logits",
+      "sample"
+    ],
+    "architecture": null,
+    "eosTokenId": null
+  },
+  "prompt": "Die",
+  "maxTokens": 1,
+  "sampling": {
+    "strategy": "greedy",
+    "seed": 42,
+    "params": {}
+  },
+  "steps": [
+    {
+      "index": 0,
+      "contextTokens": [
+        {
+          "id": 1,
+          "text": "Die"
+        }
+      ],
+      "newPositions": [
+        0,
+        1
+      ],
+      "stations": [
+        {
+          "kind": "tokenize",
+          "tokens": [
+            {
+              "id": 1,
+              "text": "Die"
+            }
+          ]
+        },
+        {
+          "kind": "logits",
+          "vocabSize": null,
+          "distribution": [
+            {
+              "token": {
+                "id": 5,
+                "text": " Katze"
+              },
+              "logit": null,
+              "prob": 0.5
+            },
+            {
+              "token": {
+                "id": 9,
+                "text": " Hund"
+              },
+              "logit": null,
+              "prob": 0.3
+            },
+            {
+              "token": {
+                "id": 2,
+                "text": " Maus"
+              },
+              "logit": null,
+              "prob": 0.2
+            }
+          ],
+          "coverage": 0.8
+        },
+        {
+          "kind": "sample",
+          "distribution": [
+            {
+              "token": {
+                "id": 5,
+                "text": " Katze"
+              },
+              "logit": null,
+              "prob": 0.5
+            },
+            {
+              "token": {
+                "id": 9,
+                "text": " Hund"
+              },
+              "logit": null,
+              "prob": 0.3
+            },
+            {
+              "token": {
+                "id": 2,
+                "text": " Maus"
+              },
+              "logit": null,
+              "prob": 0.2
+            }
+          ],
+          "random": null,
+          "chosen": {
+            "id": 5,
+            "text": " Katze"
+          }
+        }
+      ],
+      "chosen": {
+        "id": 5,
+        "text": " Katze"
+      },
+      "text": "Die Katze"
+    }
+  ],
+  "finishReason": "max-tokens"
+}

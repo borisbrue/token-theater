@@ -1,0 +1,5 @@
+// @lint-target: src/app/fixture-hint.tsx
+// @lint-expect: react/jsx-no-literals | local/jsx-no-literals
+export function Hint() {
+  return <p>Hallo Welt</p>;
+}

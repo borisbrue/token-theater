@@ -1,0 +1,187 @@
+/* Umschalter, Tokenizer-Werkbank und tokenize-Station (SPEC-0003); nur var(--tt-…). */
+
+/* ── Ansicht ── */
+.view-switch {
+  display: flex;
+  gap: 8px;
+}
+
+.view-switch button[aria-pressed='true'] {
+  border-color: var(--tt-mint);
+  background: var(--tt-tint-mint);
+  color: var(--tt-mint);
+}
+
+/* ── Werkbank ── */
+.tokenizer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: var(--tt-radius-l);
+  border: 1px solid var(--tt-line);
+  background: var(--tt-panel);
+}
+
+.tokenizer textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 96px;
+  padding: 12px 14px;
+  border-radius: var(--tt-radius-m);
+  border: 1px solid var(--tt-line-strong);
+  background: var(--tt-surface);
+  color: var(--tt-text);
+  font-family: var(--tt-font-mono);
+  font-size: 18px;
+  resize: vertical;
+}
+
+.tokenizer > button {
+  align-self: flex-start;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--tt-font-mono);
+  font-size: 14px;
+  color: var(--tt-text-soft);
+}
+
+.id-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+}
+
+.id-line code {
+  font-family: var(--tt-font-mono);
+  font-size: 14px;
+  color: var(--tt-text-soft);
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  margin: 0;
+  color: var(--tt-text-muted);
+}
+
+/* ── Tokenliste ── */
+.token-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+/* Flex-Spalte: Anzeigetext und ID sind getrennte Blöcke (CON-0009, innerText "<Text> <ID>"). */
+.tok {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: var(--tt-control);
+  min-width: var(--tt-control);
+  padding: 4px 10px;
+  border-radius: var(--tt-radius-s);
+  border: 1px solid var(--tt-line);
+  border-top-width: 3px;
+  background: var(--tt-surface-2);
+  color: var(--tt-text);
+  line-height: 1.2;
+}
+
+.tok-text {
+  font-family: var(--tt-font-mono);
+  font-size: 18px;
+  white-space: pre;
+}
+
+.tok-id {
+  font-family: var(--tt-font-mono);
+  font-size: 12px;
+  color: var(--tt-text-muted);
+}
+
+/* Benachbarte Tokens wechseln zyklisch durch vier Akzente; stärker als button:hover. */
+.token-list .tok.tok-0 {
+  border-color: var(--tt-mint);
+}
+
+.token-list .tok.tok-1 {
+  border-color: var(--tt-cyan);
+}
+
+.token-list .tok.tok-2 {
+  border-color: var(--tt-blue);
+}
+
+.token-list .tok.tok-3 {
+  border-color: var(--tt-violet);
+}
+
+.token-list button.tok[aria-pressed='true'] {
+  background: var(--tt-tint-mint);
+  box-shadow: 0 0 18px var(--tt-glow-mint);
+}
+
+/* ── BPE-Schritte ── */
+.bpe-steps h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.merge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.merge-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.merge-label {
+  min-width: 190px;
+  font-family: var(--tt-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--tt-text-muted);
+}
+
+.merge-symbols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sym {
+  padding: 2px 8px;
+  border-radius: var(--tt-radius-s);
+  border: 1px solid var(--tt-line);
+  background: var(--tt-surface-2);
+  font-family: var(--tt-font-mono);
+  font-size: 16px;
+  white-space: pre;
+}
+
+.sym.new {
+  border-color: var(--tt-mint);
+  background: var(--tt-tint-mint);
+  color: var(--tt-mint);
+}

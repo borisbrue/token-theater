@@ -1,0 +1,5 @@
+// @lint-target: src/app/fixture.ts
+// @lint-expect: none
+import { serializeTrace } from '@/trace/serialize';
+
+export const serialize = serializeTrace;

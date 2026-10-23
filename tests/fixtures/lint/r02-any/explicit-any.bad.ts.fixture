@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: @typescript-eslint/no-explicit-any
+export function toNumber(value: any): number {
+  return Number(value);
+}

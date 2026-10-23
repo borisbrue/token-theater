@@ -1,0 +1,244 @@
+/* Globale Aurora-Styles (ADR-0001): nur var(--tt-…), keine Farbwerte. */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--tt-gradient-sky);
+  background-attachment: fixed;
+  color: var(--tt-text);
+  font-family: var(--tt-font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--tt-font-display);
+  letter-spacing: -0.01em;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  min-height: var(--tt-control);
+  min-width: var(--tt-control);
+  padding: 0 16px;
+  border-radius: var(--tt-radius-m);
+  border: 1px solid var(--tt-line-strong);
+  background: var(--tt-surface);
+  color: var(--tt-text);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 200ms ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--tt-cyan);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  color: var(--tt-text-muted);
+  border-color: var(--tt-line);
+  background: transparent;
+}
+
+/* Primäraktion: Aurora-Band (ADR-0001 Regel 1). Glow nur, wenn sie gerade angesteuert wird. */
+button.primary,
+button[type='submit'] {
+  border: none;
+  background: var(--tt-gradient-aurora);
+  color: var(--tt-on-accent);
+  font-weight: 600;
+}
+
+button.primary:hover:not(:disabled),
+button.primary:focus-visible,
+button[type='submit']:hover:not(:disabled),
+button[type='submit']:focus-visible {
+  box-shadow: 0 0 28px var(--tt-glow-cyan);
+}
+
+button[type='submit']:disabled {
+  background: var(--tt-surface-2);
+  color: var(--tt-text-muted);
+  box-shadow: none;
+}
+
+input[type='text'],
+input[type='number'] {
+  min-height: var(--tt-control);
+  box-sizing: border-box;
+  padding: 0 14px;
+  border-radius: var(--tt-radius-m);
+  border: 1px solid var(--tt-line-strong);
+  background: var(--tt-surface);
+  color: var(--tt-text);
+  font-family: var(--tt-font-mono);
+}
+
+input[type='file'] {
+  color: var(--tt-text-soft);
+}
+
+:focus-visible {
+  outline: 3px solid var(--tt-cyan);
+  outline-offset: 3px;
+}
+
+/* Mono-Labels in Versalien (Cyberpunk-Akzent). */
+.label {
+  font-family: var(--tt-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tt-text-muted);
+}
+
+/* ── App-Rahmen ── */
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 16px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.app header h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+  background: var(--tt-gradient-aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: var(--tt-text-muted);
+}
+
+.panel {
+  position: relative;
+  padding: 20px 22px;
+  border-radius: var(--tt-radius-l);
+  border: 1px solid var(--tt-line);
+  background: var(--tt-panel);
+}
+
+/* Eckmarken an der aktiven Station: Mint oben links, Blau unten rechts. */
+.panel.active::before,
+.panel.active::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+.panel.active::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--tt-mint);
+  border-left: 2px solid var(--tt-mint);
+  border-top-left-radius: var(--tt-radius-l);
+}
+
+.panel.active::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--tt-blue);
+  border-right: 2px solid var(--tt-blue);
+  border-bottom-right-radius: var(--tt-radius-l);
+}
+
+/* ── Inspector-Steuerung (SPEC-0001) ── */
+.controls {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px 14px;
+  align-items: center;
+  padding: 20px 22px;
+  border-radius: var(--tt-radius-l);
+  border: 1px solid var(--tt-line);
+  background: var(--tt-panel);
+}
+
+.controls label {
+  font-family: var(--tt-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tt-text-muted);
+}
+
+.controls button {
+  justify-self: start;
+}
+
+.error {
+  padding: 12px 18px;
+  border-radius: var(--tt-radius-m);
+  border: 1px solid var(--tt-error);
+  background: var(--tt-tint-error);
+  color: var(--tt-error);
+  overflow-wrap: anywhere;
+}
+
+.error p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.generated {
+  padding: 14px 18px;
+  border-radius: var(--tt-radius-m);
+  border-left: 3px solid var(--tt-mint);
+  background: var(--tt-panel);
+  font-family: var(--tt-font-mono);
+  font-size: 18px;
+}
+
+/* ── Details: Schrittliste ── */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.step {
+  border-top: 1px solid var(--tt-line);
+  padding: 8px 0;
+}
+
+.step h2 {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.stations {
+  margin: 0;
+  padding-left: 20px;
+  font-family: var(--tt-font-mono);
+  font-size: 13px;
+  color: var(--tt-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* ADR-0001 Regel 5: Bewegung respektiert die Systemeinstellung. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,0 +1,130 @@
+/* Präsentationsmodus (SPEC-0009 §3.2): Bühne in Fensterhöhe, Station scrollt, nur var(--tt-…). */
+:root {
+  --tt-stage-scale: 1.5;
+  --tt-stage-text-scale: 1.25;
+}
+
+.app[data-mode='presentation'] {
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  padding: 12px 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+  outline: none;
+}
+
+.stage-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.stage-title {
+  margin: 0;
+  font-family: var(--tt-font-display);
+  font-weight: 700;
+  font-size: 20px;
+  background: var(--tt-gradient-aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stage-position {
+  margin: 0;
+  color: var(--tt-mint);
+  font-family: var(--tt-font-mono);
+}
+
+.stage-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.stage .token-stream {
+  flex: 0 0 auto;
+}
+
+.stage .token {
+  font-size: calc(var(--tt-token-size) * var(--tt-stage-scale));
+}
+
+.stage .station-view {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.stage .station-view .explanation,
+.stage .station-view .explanation-more {
+  font-size: calc(var(--tt-explanation-size) * var(--tt-stage-text-scale));
+}
+
+.stage .playback {
+  flex: 0 0 auto;
+}
+
+/* „Mehr dazu“ (SPEC-0009 §3.4) */
+.explanation-more {
+  max-width: 720px;
+  margin: 0 0 12px;
+  color: var(--tt-text-soft);
+}
+
+.explanation-more summary {
+  cursor: pointer;
+  color: var(--tt-cyan);
+}
+
+.explanation-more p {
+  margin: 8px 0 0;
+}
+
+/* Kompakte Transportleiste auf der Bühne: Platz für die Station (SPEC-0009 §3.2). */
+.stage .playback {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 16px;
+}
+
+.stage .shortcuts {
+  display: none;
+}
+
+.stage .timeline {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.stage .timeline,
+.stage .station-strip {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.stage .station-strip,
+.stage .playback .hint {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.stage .timeline > *,
+.stage .station-strip > * {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}

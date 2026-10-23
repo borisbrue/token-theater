@@ -1,0 +1,5 @@
+// @lint-target: src/views/fixture-badge.tsx
+// @lint-expect: react/jsx-no-literals | local/jsx-no-literals
+export function Badge() {
+  return <span title="Hinweis" />;
+}

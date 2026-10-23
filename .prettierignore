@@ -1,0 +1,12 @@
+tests/fixtures
+.sdd
+.claude
+dist
+playwright-report
+test-results
+coverage
+node_modules
+package-lock.json
+# AGENTS.md wird von sdd init/validate gepflegt (Vorlage mit festen Abschnitten)
+AGENTS.md
+public/tokenizers/

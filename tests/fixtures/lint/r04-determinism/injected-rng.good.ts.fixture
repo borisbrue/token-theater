@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: none
+import type { Rng } from '@/engine/types';
+
+export const roll = (rng: Rng): number => rng.next();

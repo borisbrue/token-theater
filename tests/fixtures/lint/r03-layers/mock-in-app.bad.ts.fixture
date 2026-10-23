@@ -1,0 +1,5 @@
+// @lint-target: src/app/fixture.ts
+// @lint-expect: import-x/no-restricted-paths
+import { MockEngine } from '../engine/mock/mock-engine';
+
+export const Engine = MockEngine;

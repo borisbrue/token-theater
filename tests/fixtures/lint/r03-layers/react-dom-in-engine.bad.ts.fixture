@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: no-restricted-imports | @typescript-eslint/no-restricted-imports
+import { createRoot } from 'react-dom/client';
+
+export const root = createRoot;

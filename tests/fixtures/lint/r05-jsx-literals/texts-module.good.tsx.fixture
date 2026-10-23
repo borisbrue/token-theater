@@ -1,0 +1,11 @@
+// @lint-target: src/app/fixture-heading.tsx
+// @lint-expect: none
+import { texts } from '@/app/texts';
+
+export function Heading() {
+  return (
+    <h1 className="title" id="title">
+      {texts.appTitle}
+    </h1>
+  );
+}

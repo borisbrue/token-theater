@@ -1,0 +1,5 @@
+// @lint-target: src/app/fixture-close.tsx
+// @lint-expect: react/jsx-no-literals | local/jsx-no-literals
+export function Close() {
+  return <button type="button" aria-label="Schließen" />;
+}

@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "id": "trace-gpt2-bpe",
+  "createdAt": "2026-10-22T08:00:00Z",
+  "engine": {
+    "kind": "fixture",
+    "model": "gpt2-tokenizer-only",
+    "capabilities": [
+      "tokenize",
+      "logits",
+      "sample"
+    ],
+    "architecture": null,
+    "eosTokenId": 50256
+  },
+  "prompt": "Die Katze",
+  "maxTokens": 1,
+  "sampling": {
+    "strategy": "greedy",
+    "seed": 42,
+    "params": {}
+  },
+  "steps": [
+    {
+      "index": 0,
+      "contextTokens": [
+        {
+          "id": 32423,
+          "text": "Die"
+        },
+        {
+          "id": 8595,
+          "text": " Kat"
+        },
+        {
+          "id": 2736,
+          "text": "ze"
+        }
+      ],
+      "newPositions": [
+        0,
+        3
+      ],
+      "stations": [
+        {
+          "kind": "tokenize",
+          "tokens": [
+            {
+              "id": 32423,
+              "text": "Die"
+            },
+            {
+              "id": 8595,
+              "text": " Kat"
+            },
+            {
+              "id": 2736,
+              "text": "ze"
+            }
+          ],
+          "bpe": {
+            "words": [
+              {
+                "text": "Die",
+                "bytes": [
+                  68,
+                  105,
+                  101
+                ],
+                "stages": [
+                  [
+                    [
+                      68
+                    ],
+                    [
+                      105
+                    ],
+                    [
+                      101
+                    ]
+                  ],
+                  [
+                    [
+                      68
+                    ],
+                    [
+                      105,
+                      101
+                    ]
+                  ],
+                  [
+                    [
+                      68,
+                      105,
+                      101
+                    ]
+                  ]
+                ],
+                "ranks": [
+                  238,
+                  32167
+                ],
+                "ids": [
+                  32423
+                ]
+              },
+              {
+                "text": " Katze",
+                "bytes": [
+                  32,
+                  75,
+                  97,
+                  116,
+                  122,
+                  101
+                ],
+                "stages": [
+                  [
+                    [
+                      32
+                    ],
+                    [
+                      75
+                    ],
+                    [
+                      97
+                    ],
+                    [
+                      116
+                    ],
+                    [
+                      122
+                    ],
+                    [
+                      101
+                    ]
+                  ],
+                  [
+                    [
+                      32
+                    ],
+                    [
+                      75
+                    ],
+                    [
+                      97,
+                      116
+                    ],
+                    [
+                      122
+                    ],
+                    [
+                      101
+                    ]
+                  ],
+                  [
+                    [
+                      32,
+                      75
+                    ],
+                    [
+                      97,
+                      116
+                    ],
+                    [
+                      122
+                    ],
+                    [
+                      101
+                    ]
+                  ],
+                  [
+                    [
+                      32,
+                      75
+                    ],
+                    [
+                      97,
+                      116
+                    ],
+                    [
+                      122,
+                      101
+                    ]
+                  ],
+                  [
+                    [
+                      32,
+                      75,
+                      97,
+                      116
+                    ],
+                    [
+                      122,
+                      101
+                    ]
+                  ]
+                ],
+                "ranks": [
+                  9,
+                  253,
+                  2480,
+                  8339
+                ],
+                "ids": [
+                  8595,
+                  2736
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "kind": "logits",
+          "vocabSize": 50257,
+          "distribution": [
+            {
+              "token": {
+                "id": 1175,
+                "text": " war"
+              },
+              "logit": null,
+              "prob": 0.6
+            },
+            {
+              "token": {
+                "id": 318,
+                "text": " is"
+              },
+              "logit": null,
+              "prob": 0.4
+            }
+          ],
+          "coverage": null
+        },
+        {
+          "kind": "sample",
+          "distribution": [
+            {
+              "token": {
+                "id": 1175,
+                "text": " war"
+              },
+              "logit": null,
+              "prob": 0.6
+            },
+            {
+              "token": {
+                "id": 318,
+                "text": " is"
+              },
+              "logit": null,
+              "prob": 0.4
+            }
+          ],
+          "random": null,
+          "chosen": {
+            "id": 1175,
+            "text": " war"
+          }
+        }
+      ],
+      "chosen": {
+        "id": 1175,
+        "text": " war"
+      },
+      "text": "Die Katze war"
+    }
+  ],
+  "finishReason": "max-tokens"
+}

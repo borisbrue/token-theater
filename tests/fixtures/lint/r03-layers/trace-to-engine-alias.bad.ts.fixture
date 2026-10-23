@@ -1,0 +1,5 @@
+// @lint-target: src/trace/fixture.ts
+// @lint-expect: import-x/no-restricted-paths
+import { createRng } from '@/engine/rng';
+
+export const rng = createRng;

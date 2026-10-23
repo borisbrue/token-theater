@@ -1,0 +1,4 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: none
+// Die Antwort wird erklärt, nicht unterdrückt.
+export const answer = 42;

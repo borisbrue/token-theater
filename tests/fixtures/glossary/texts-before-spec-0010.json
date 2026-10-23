@@ -1,0 +1,45 @@
+{
+  "explanations": {
+    "tokenize": "Der Text wird in Tokens zerlegt: Wörter oder Satzzeichen mit einer festen Nummer.",
+    "embed": "Jedes Token wird zu einem Zahlenvektor. Dazu kommt ein Vektor für seine Position im Satz.",
+    "attention": "Jedes Token schaut auf die Tokens davor und sammelt, was für es wichtig ist. Jeder Kopf achtet auf etwas anderes. In die Zukunft schaut niemand.",
+    "residual": "Das Ergebnis wird zum laufenden Datenstrom addiert. Nichts geht verloren, es kommt nur etwas hinzu.",
+    "mlp": "Ein kleines neuronales Netz verarbeitet jedes Token einzeln weiter und verknüpft das Gelernte.",
+    "logits": "Aus dem letzten Vektor entsteht für jedes Wort im Vokabular eine Bewertung und daraus eine Wahrscheinlichkeit.",
+    "sample": "Aus den Wahrscheinlichkeiten wird das nächste Token gewählt."
+  },
+  "more": {
+    "tokenize": {
+      "none": "Zerlegt wird mit Byte-Pair-Encoding: Häufige Zeichenfolgen sind zu einem Token verschmolzen, seltene Wörter bestehen aus mehreren Stücken. Ein Leerzeichen gehört zum folgenden Wort und erscheint als „␣“.",
+      "facts": "Zerlegt wird mit Byte-Pair-Encoding: Häufige Zeichenfolgen sind zu einem Token verschmolzen, seltene Wörter bestehen aus mehreren Stücken. Ein Leerzeichen gehört zum folgenden Wort und erscheint als „␣“. Das Vokabular hat 50.257 Tokens."
+    },
+    "embed": {
+      "none": "Das Token-Embedding ist eine Zeile aus einer großen gelernten Tabelle, eine Zeile je Token. Das Positions-Embedding stammt aus einer zweiten Tabelle, eine Zeile je Position. Beide werden addiert; die Summe ist der Anfang des Residual Stream.",
+      "facts": "Das Token-Embedding ist eine Zeile aus einer großen gelernten Tabelle, eine Zeile je Token. Das Positions-Embedding stammt aus einer zweiten Tabelle, eine Zeile je Position. Beide werden addiert; die Summe ist der Anfang des Residual Stream. Jeder Vektor hat 8 Zahlen."
+    },
+    "attention": {
+      "none": "Jedes Token bildet drei Vektoren: eine Frage (Query), ein Erkennungszeichen (Key) und einen Inhalt (Value). Passt die Frage eines Tokens zum Erkennungszeichen eines früheren, übernimmt es viel von dessen Inhalt. Spätere Tokens sind ausgeblendet (kausale Maske). Keys und Values früherer Tokens bleiben gespeichert (KV-Cache), deshalb rechnet jeder neue Schritt nur eine Zeile.",
+      "facts": "Jedes Token bildet drei Vektoren: eine Frage (Query), ein Erkennungszeichen (Key) und einen Inhalt (Value). Passt die Frage eines Tokens zum Erkennungszeichen eines früheren, übernimmt es viel von dessen Inhalt. Spätere Tokens sind ausgeblendet (kausale Maske). Keys und Values früherer Tokens bleiben gespeichert (KV-Cache), deshalb rechnet jeder neue Schritt nur eine Zeile. Dieses Modell hat 2 Köpfe in jedem seiner 2 Layer."
+    },
+    "residual-attention": {
+      "none": "Der Residual Stream ist wie ein Notizblock, der durch alle Layer gereicht wird. Die Attention schreibt ihr Ergebnis dazu, statt ihn zu ersetzen. So kommt die ursprüngliche Information unverändert bei den späteren Layern an.",
+      "facts": "Der Residual Stream ist wie ein Notizblock, der durch alle Layer gereicht wird. Die Attention schreibt ihr Ergebnis dazu, statt ihn zu ersetzen. So kommt die ursprüngliche Information unverändert bei den späteren Layern an. Er hat 8 Dimensionen."
+    },
+    "mlp": {
+      "none": "Das MLP arbeitet für jedes Token einzeln: Es vergrößert den Vektor, wendet eine Nichtlinearität an (GELU) und verkleinert ihn wieder. Man vermutet darin einen Speicher für Wissen, das das Modell beim Training gelernt hat.",
+      "facts": "Das MLP arbeitet für jedes Token einzeln: Es vergrößert den Vektor, wendet eine Nichtlinearität an (GELU) und verkleinert ihn wieder. Man vermutet darin einen Speicher für Wissen, das das Modell beim Training gelernt hat. Hier: 8 → 32 → 8 Zahlen."
+    },
+    "residual-mlp": {
+      "none": "Nach dem MLP ist ein Layer fertig; der Strom geht an den nächsten Layer oder, nach dem letzten, an die Ausgabe. Die Logit-Lens zeigt, welches Token das Modell vorhersagen würde, wenn es hier aufhörte.",
+      "facts": "Nach dem MLP ist ein Layer fertig; der Strom geht an den nächsten Layer oder, nach dem letzten, an die Ausgabe. Die Logit-Lens zeigt, welches Token das Modell vorhersagen würde, wenn es hier aufhörte. Das Modell hat 2 Layer, gezählt ab 0."
+    },
+    "logits": {
+      "none": "Der letzte Vektor wird normiert und mit der Embedding-Tabelle verglichen: Je ähnlicher er der Zeile eines Tokens ist, desto höher dessen Bewertung (Logit). Softmax macht daraus Wahrscheinlichkeiten, die sich zu 100 % addieren. Ist das Modell unbekannt (etwa bei einem Server), kennt der Trace nur die gelieferten Kandidaten.",
+      "facts": "Der letzte Vektor wird normiert und mit der Embedding-Tabelle verglichen: Je ähnlicher er der Zeile eines Tokens ist, desto höher dessen Bewertung (Logit). Softmax macht daraus Wahrscheinlichkeiten, die sich zu 100 % addieren. Bewertet werden alle 50.257 Tokens des Vokabulars."
+    },
+    "sample": {
+      "none": "Greedy nimmt immer das wahrscheinlichste Token. Mit Zufall verändert die Temperatur die Verteilung (klein: vorsichtiger, groß: wilder), Top-k behält nur die k besten Kandidaten und Top-p die kleinste Gruppe, die zusammen p erreicht. Ausprobieren lässt sich das im Sampling-Labor der logits-Station.",
+      "facts": "Greedy nimmt immer das wahrscheinlichste Token. Mit Zufall verändert die Temperatur die Verteilung (klein: vorsichtiger, groß: wilder), Top-k behält nur die k besten Kandidaten und Top-p die kleinste Gruppe, die zusammen p erreicht. Ausprobieren lässt sich das im Sampling-Labor der logits-Station."
+    }
+  }
+}

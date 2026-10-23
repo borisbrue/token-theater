@@ -1,0 +1,4 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export const answer = 42;

@@ -1,0 +1,540 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://token-theater.local/schemas/trace-v1.schema.json",
+  "title": "Token Theater Trace v1",
+  "description": "Serialisiertes Trace-Format. Gehört zu SPEC-0001 / CON-0001. Inkompatible Änderungen erhöhen schemaVersion. Zusätzliche optionale Felder sind erlaubt, außer in Tensor, Token und Candidate. Semantische Invarianten (INV-xx) stehen in CON-0001 und werden vom Importer zusätzlich geprüft.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "createdAt",
+    "engine",
+    "prompt",
+    "maxTokens",
+    "sampling",
+    "steps",
+    "finishReason"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "engine": {
+      "$ref": "#/$defs/EngineInfo"
+    },
+    "prompt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maxTokens": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32
+    },
+    "sampling": {
+      "$ref": "#/$defs/SamplingParams"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/GenerationStep"
+      }
+    },
+    "finishReason": {
+      "enum": ["max-tokens", "eos", "aborted", "error"]
+    },
+    "error": {
+      "type": "object",
+      "required": ["message"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "$defs": {
+    "StationKind": {
+      "enum": ["tokenize", "embed", "attention", "mlp", "residual", "logits", "sample"]
+    },
+    "EngineInfo": {
+      "type": "object",
+      "required": ["kind", "model", "capabilities", "architecture", "eosTokenId"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/StationKind"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "logits"
+              }
+            },
+            {
+              "contains": {
+                "const": "sample"
+              }
+            }
+          ]
+        },
+        "architecture": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "required": ["nLayers", "nHeads", "dModel", "dMlp", "vocabSize", "contextLength"],
+              "properties": {
+                "nLayers": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "nHeads": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "dModel": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "dMlp": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "vocabSize": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "contextLength": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          ]
+        },
+        "eosTokenId": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "SamplingParams": {
+      "type": "object",
+      "required": ["strategy", "seed", "params"],
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "type": ["number", "string", "boolean"]
+          }
+        }
+      }
+    },
+    "Token": {
+      "type": "object",
+      "required": ["id", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "Candidate": {
+      "type": "object",
+      "required": ["token", "logit", "prob"],
+      "additionalProperties": false,
+      "properties": {
+        "token": {
+          "$ref": "#/$defs/Token"
+        },
+        "logit": {
+          "type": ["number", "null"]
+        },
+        "prob": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "Tensor": {
+      "type": "object",
+      "required": ["shape", "dtype", "data"],
+      "additionalProperties": false,
+      "properties": {
+        "shape": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "dtype": {
+          "const": "float32"
+        },
+        "data": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "pattern": "^[A-Za-z0-9+/]*={0,2}$"
+        }
+      }
+    },
+    "Distribution": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/Candidate"
+      }
+    },
+    "GenerationStep": {
+      "type": "object",
+      "required": ["index", "contextTokens", "newPositions", "stations", "chosen", "text"],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contextTokens": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/Token"
+          }
+        },
+        "newPositions": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ],
+          "items": false,
+          "minItems": 2
+        },
+        "stations": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/Station"
+          }
+        },
+        "chosen": {
+          "$ref": "#/$defs/Token"
+        },
+        "text": {
+          "type": "string",
+          "description": "Decodierter Text von contextTokens ++ [chosen] (tokenizer.decode)"
+        }
+      }
+    },
+    "Station": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/StationKind"
+        }
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/TokenizeStation"
+        },
+        {
+          "$ref": "#/$defs/EmbedStation"
+        },
+        {
+          "$ref": "#/$defs/AttentionStation"
+        },
+        {
+          "$ref": "#/$defs/MlpStation"
+        },
+        {
+          "$ref": "#/$defs/ResidualStation"
+        },
+        {
+          "$ref": "#/$defs/LogitsStation"
+        },
+        {
+          "$ref": "#/$defs/SampleStation"
+        }
+      ]
+    },
+    "TokenizeStation": {
+      "type": "object",
+      "required": ["kind", "tokens"],
+      "properties": {
+        "kind": {
+          "const": "tokenize"
+        },
+        "tokens": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/Token"
+          }
+        },
+        "bpe": {
+          "$ref": "#/$defs/BpeDetail"
+        }
+      }
+    },
+    "EmbedStation": {
+      "type": "object",
+      "required": ["kind", "token", "position", "sum"],
+      "properties": {
+        "kind": {
+          "const": "embed"
+        },
+        "token": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "position": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "sum": {
+          "$ref": "#/$defs/Tensor"
+        }
+      }
+    },
+    "AttentionStation": {
+      "type": "object",
+      "required": ["kind", "layer", "lnIn", "q", "k", "v", "weights", "out"],
+      "properties": {
+        "kind": {
+          "const": "attention"
+        },
+        "layer": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lnIn": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "q": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "k": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "v": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "weights": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "out": {
+          "$ref": "#/$defs/Tensor"
+        }
+      }
+    },
+    "MlpStation": {
+      "type": "object",
+      "required": ["kind", "layer", "lnIn", "hidden", "out"],
+      "properties": {
+        "kind": {
+          "const": "mlp"
+        },
+        "layer": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lnIn": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "hidden": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "out": {
+          "$ref": "#/$defs/Tensor"
+        }
+      }
+    },
+    "ResidualStation": {
+      "type": "object",
+      "required": ["kind", "layer", "after", "stream"],
+      "properties": {
+        "kind": {
+          "const": "residual"
+        },
+        "layer": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "after": {
+          "enum": ["attention", "mlp"]
+        },
+        "stream": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "lens": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/Candidate"
+          }
+        }
+      }
+    },
+    "LogitsStation": {
+      "type": "object",
+      "required": ["kind", "vocabSize", "distribution", "coverage"],
+      "properties": {
+        "kind": {
+          "const": "logits"
+        },
+        "vocabSize": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "distribution": {
+          "$ref": "#/$defs/Distribution"
+        },
+        "coverage": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            }
+          ]
+        }
+      }
+    },
+    "SampleStation": {
+      "type": "object",
+      "required": ["kind", "distribution", "random", "chosen"],
+      "properties": {
+        "kind": {
+          "const": "sample"
+        },
+        "distribution": {
+          "$ref": "#/$defs/Distribution"
+        },
+        "random": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMaximum": 1
+            }
+          ]
+        },
+        "chosen": {
+          "$ref": "#/$defs/Token"
+        }
+      }
+    },
+    "BpeDetail": {
+      "type": "object",
+      "required": ["words"],
+      "properties": {
+        "words": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BpeWord"
+          }
+        }
+      }
+    },
+    "BpeWord": {
+      "type": "object",
+      "required": ["text", "bytes", "stages", "ranks", "ids"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bytes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          }
+        },
+        "stages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255
+              }
+            }
+          }
+        },
+        "ranks": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

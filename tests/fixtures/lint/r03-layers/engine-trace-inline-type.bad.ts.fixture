@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: @typescript-eslint/consistent-type-imports | @typescript-eslint/no-restricted-imports | no-restricted-imports
+import { Trace } from '@/trace/types';
+
+export type CopyOfTrace = Trace;

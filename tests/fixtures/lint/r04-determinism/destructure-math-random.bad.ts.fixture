@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: no-restricted-properties | no-restricted-syntax | no-restricted-globals
+const { random } = Math;
+
+export const roll = random;

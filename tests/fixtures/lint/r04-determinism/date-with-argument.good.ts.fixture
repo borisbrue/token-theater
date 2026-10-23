@@ -1,0 +1,3 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: none
+export const epoch = (): Date => new Date(0);

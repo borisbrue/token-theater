@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: no-restricted-imports | @typescript-eslint/no-restricted-imports
+import { createElement } from 'react';
+
+export const el = createElement;

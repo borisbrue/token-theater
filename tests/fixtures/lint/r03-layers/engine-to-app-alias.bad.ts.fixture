@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: import-x/no-restricted-paths
+import { texts } from '@/app/texts';
+
+export const t = texts;

@@ -1,0 +1,5 @@
+// @lint-target: src/engine/fixture.ts
+// @lint-expect: none
+import type { Trace } from '@/trace/types';
+
+export type CopyOfTrace = Trace;
