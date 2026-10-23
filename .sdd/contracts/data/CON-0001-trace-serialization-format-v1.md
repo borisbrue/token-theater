@@ -5,10 +5,10 @@ title: "Trace serialization format v1"
 type: data
 format: json-schema
 spec: SPEC-0001
-version: 0.4.0
+version: 0.5.0
 status: approved
 artifact: ".sdd/contracts/data/trace-serialization-format-v1.schema.json"
-tests: ["TST-0001", "TST-0017"]
+tests: ["TST-0001", "TST-0017", "TST-0024"]
 ---
 
 # Contract: Trace serialization format v1
@@ -32,7 +32,8 @@ SPEC-0001 3.2 bilden ihn ab (Tensordaten dort als `Float32Array` statt Base64).
 
 Bezeichnungen: `A = engine.architecture` (falls nicht `null`), `L = A.nLayers`,
 `H = A.nHeads`, `D = A.dModel`, `M = A.dMlp`, `V = A.vocabSize`,
-`C = A.contextLength`, `E = engine.eosTokenId`. Für Schritt `s` ist
+`C = A.contextLength`, `E = engine.eosTokenId`, `X = A.nExperts`, `K = A.topK` (beide optional,
+seit v0.5.0). Für Schritt `s` ist
 `[a, b) = s.newPositions` und `n = b − a`.
 
 - **INV-01 Tensorlänge:** Für jeden Tensor ist die Länge der Base64-dekodierten
@@ -45,18 +46,23 @@ Bezeichnungen: `A = engine.architecture` (falls nicht `null`), `L = A.nLayers`,
   `len = len(steps[i].contextTokens)`.
 - **INV-05 Stationsreihenfolge:** Die Stationen eines Schritts folgen der
   Reihenfolge `tokenize?, embed, (attention(l), residual(l, after=attention),
-  mlp(l), residual(l, after=mlp)) für l = 0..L−1, logits, sample`. Davon fehlen
+  ff(l), residual(l, after=ff)) für l = 0..L−1, logits, sample`; `ff(l)` ist je Layer
+  entweder `mlp(l)` oder `moe(l)` (seit v0.5.0), und `after` der folgenden residual-Station ist
+  die Art dieser Station. Ein Trace darf dichte und MoE-Layer mischen. Davon fehlen
   genau die Arten, die nicht in `engine.capabilities` stehen. `tokenize` erscheint
   nur in Schritt 0, und dort genau dann, wenn die Fähigkeit vorhanden ist. Die
   letzten beiden Stationen sind immer `logits` und `sample`. Die `layer`-Werte
   liegen in `0..L−1`.
 - **INV-06 Fähigkeiten:** Jede Station hat eine Art aus `engine.capabilities`.
-  Enthält `capabilities` eine der Arten `embed`, `attention`, `mlp` oder `residual`,
-  ist `engine.architecture` nicht `null`.
+  Enthält `capabilities` eine der Arten `embed`, `attention`, `mlp`, `moe` oder `residual`,
+  ist `engine.architecture` nicht `null`. Enthält sie `moe`, sind `X` und `K` gesetzt und
+  `K ≤ X` (die Untergrenzen `X ≥ 2`, `K ≥ 1` prüft das Schema). Eine Layer-Art aus
+  `mlp`/`moe` ohne Fähigkeit fehlt wie jede andere Art; welche der beiden in einem Layer
+  steht, legt die Engine fest.
 - **INV-07 Tokenize:** Die `tokenize`-Station enthält dieselben Tokens wie `steps[0].contextTokens`.
 - **INV-08 Tensorformen:** `embed.token|position|sum`, `attention.lnIn|q|k|v|out`,
-  `mlp.lnIn|out` und `residual.stream` haben die Form `[n, D]`, `mlp.hidden` hat
-  `[n, M]` und `attention.weights` hat `[H, n, b]`.
+  `mlp.lnIn|out`, `moe.lnIn|out` und `residual.stream` haben die Form `[n, D]`, `mlp.hidden`
+  hat `[n, M]`, `moe.routerLogits` hat `[n, X]` und `attention.weights` hat `[H, n, b]`.
 - **INV-09 Kausale Attention:** Für jedes `attention.weights[h, i, j]` gilt:
   `0 ≤ w ≤ 1`, die Zeilensumme über `j` ist `1 ± 1e-5`, und `w = 0` für `j > a + i`.
 - **INV-10 Verteilungen:** `logits.distribution` und `sample.distribution` sind
@@ -109,6 +115,18 @@ Bezeichnungen: `A = engine.architecture` (falls nicht `null`), `L = A.nLayers`,
   `lens` sind nicht betroffen. Welche Stationen eine Lens tragen (bei GPT-2 und Mock: nur
   `after: "mlp"`, letzte Position), legt die Engine fest (CON-0016); der Import prüft das nicht.
 
+- **INV-18 Routing** (seit v0.5.0, SPEC-0011): Für jede moe-Station gilt:
+  - `experts` und `gates` haben je `n` Zeilen; jede Zeile hat genau `K` Einträge.
+  - Die IDs einer Zeile `experts[i]` sind verschieden und liegen in `0..X−1`.
+  - `gates[i]` ist absteigend (gleich erlaubt); dass jedes Gate in `(0, 1]` liegt, prüft das
+    Schema; die Summe ist `≤ 1 + 1e-5` (sie darf unter 1 liegen: Modelle ohne Renormierung).
+  - Top-k: Für jeden gewählten Experten `e` und jeden nicht gewählten `f` gilt
+    `routerLogits[i, e] ≥ routerLogits[i, f]`.
+  Der `path` jedes INV-18-Befunds beginnt mit `/steps/<s>/stations/<i>/` und nennt das Feld
+  (`experts/<i>`, `gates/<i>`). Wie Gates aus den Router-Logits entstehen (Softmax über die
+  Top-k, über alle, Sigmoid), legt die Engine fest; der Import prüft das nicht. Traces ohne moe-
+  Station sind nicht betroffen.
+
 ## Import-Fehler
 
 `deserializeTrace(json: string)` prüft in dieser Reihenfolge (Chain of
@@ -128,7 +146,7 @@ class TraceImportError extends Error {
 | `parse`    | kein gültiges JSON oder Wurzel ist kein Objekt | genau 1, `path: ""` |
 | `version`  | `schemaVersion` fehlt, ist keine Ganzzahl oder ungleich 1 | genau 1, `path: "/schemaVersion"`; `message` enthält bei vorhandenem Wert die Version |
 | `schema`   | Verletzung des JSON Schemas | alle Verstöße (max. 50), `path` = JSON Pointer (RFC 6901) des betroffenen Werts. Bei `oneOf` über Stationen wird nur der Zweig gemeldet, dessen `kind` passt. Folgefehler anderer Zweige werden unterdrückt |
-| `semantic` | Verletzung von INV-01 bis INV-13 oder INV-15 bis INV-17 | alle Verstöße (max. 50), mit `invariant: "INV-xx"` |
+| `semantic` | Verletzung von INV-01 bis INV-13 oder INV-15 bis INV-18 | alle Verstöße (max. 50), mit `invariant: "INV-xx"` |
 
 Die `message`-Felder sind technisch (Englisch erlaubt). Für Nutzer formuliert sie
 die UI über `texts.ts`.
@@ -190,3 +208,4 @@ also eine Remote-artige Engine ohne Interna):
 |---|---|---|
 | 2026-10-22 | 0.3.0 | SPEC-0003: optionales Feld `bpe` an der tokenize-Station (`$defs/BpeDetail`, `$defs/BpeWord`), INV-16; `schemaVersion` bleibt 1 |
 | 2026-10-22 | 0.4.0 | SPEC-0007: optionales Feld `lens` an der residual-Station, INV-17; `schemaVersion` bleibt 1 |
+| 2026-10-23 | 0.5.0 | SPEC-0011: Station `moe` (`$defs/MoeStation`), `architecture.nExperts`/`topK`, `residual.after = "moe"`, INV-05/06/08 erweitert, INV-18; `schemaVersion` bleibt 1 |

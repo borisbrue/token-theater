@@ -201,6 +201,32 @@ export const GLOSSARY: Glossary = {
       'Ein Halt innerhalb eines Schritts: tokenize, embed, je Layer attention, residual, mlp, residual, dann logits und sample.',
     inApp: 'Die Stationsleiste und die Position „Station i / n“.',
   },
+  // Mixture of Experts (SPEC-0011 §3.7)
+  moe: {
+    term: 'Mixture of Experts',
+    meaning:
+      'Eine Bauart, bei der ein Layer statt eines MLP viele Experten hat und je Token nur wenige davon rechnen. Das Modell hat dadurch viele Parameter, braucht je Token aber nur einen Bruchteil der Rechenarbeit.',
+    inApp: 'Die moe-Stationen; die Layer-Karte zeigt sie als „X“.',
+  },
+  expert: {
+    term: 'Experte',
+    meaning:
+      'Eines von vielen kleinen MLPs in einem MoE-Layer, jedes mit eigenen Gewichten. Experten spezialisieren sich beim Training oft auf Muster wie Satzzeichen, Zahlen oder Wortarten, selten auf ein ganzes Thema.',
+    inApp: 'Die Spalten der Routing-Tabelle, gezählt ab 0.',
+  },
+  router: {
+    term: 'Router',
+    meaning:
+      'Eine kleine lineare Schicht, die für jedes Token eine Bewertung je Experte berechnet. Die Experten mit den höchsten Bewertungen bekommen das Token.',
+    inApp:
+      'Die Farbe einer Zelle in der Routing-Tabelle zeigt, wie stark der Router diesen Experten bewertet.',
+  },
+  gate: {
+    term: 'Gate-Gewicht',
+    meaning:
+      'Der Anteil, mit dem das Ergebnis eines gewählten Experten in die Mischung eingeht. Meist ergeben die Gate-Gewichte eines Tokens zusammen 100 %.',
+    inApp: 'Die Prozentzahl in den umrandeten Zellen und die Balken unter „Gewählte Experten“.',
+  },
 };
 
 /** Begriffe je Station, in dieser Reihenfolge (SPEC-0010 §3.5). */
@@ -210,6 +236,7 @@ export const TERMS_BY_STATION: Readonly<Record<StationKind, readonly TermId[]>> 
   attention: ['attention', 'head', 'qkv', 'mask', 'kvCache', 'layerNorm'],
   residual: ['residual', 'layer', 'norm', 'logitLens'],
   mlp: ['mlp', 'hidden', 'neuron', 'gelu', 'layerNorm'],
+  moe: ['moe', 'router', 'expert', 'gate', 'layerNorm'],
   logits: ['logit', 'softmax', 'candidate', 'vocabulary'],
   sample: ['sampling', 'greedy', 'temperature', 'topK', 'topP', 'seed'],
 };

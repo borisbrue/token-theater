@@ -142,14 +142,14 @@ Funktionalität: Layer-Karte und Glossar
   Szenario: Glossar-Ansicht
     Wenn ich in der Gruppe "Ansicht" auf "Glossar" klicke
     Dann hat der Knopf "Glossar" aria-pressed="true"
-    Und enthält die Region "Glossar" 33 Begriffe (dt), alphabetisch nach deutscher Sortierung
+    Und enthält die Region "Glossar" 37 Begriffe (dt), alphabetisch nach deutscher Sortierung
     Und ist der erste Begriff "Attention" und der letzte "Vokabular"
     Und hat der Begriff "Logit-Lens" die ID "begriff-logitLens" und die Beschreibung "Wendet die Ausgabe des Modells schon auf einen Zwischenstand des Residual Stream an. So sieht man, welches Token das Modell nach diesem Layer vorhersagen würde." mit dem Absatz "In der App: Die residual-Stationen nach dem MLP, für die letzte Position."
     Wenn ich in der Gruppe "Ansicht" auf "Durchlauf" klicke
     Dann gibt es keine Region "Glossar"
 
   Szenario: Glossar vollständig
-    Dann hat das Glossar in texts genau die 33 IDs aus SPEC-0010 §3.4, jede mit nicht leerem term, meaning und inApp
+    Dann hat das Glossar in texts genau die 37 IDs aus SPEC-0010 §3.4 und SPEC-0011 §3.7, jede mit nicht leerem term, meaning und inApp
     Und verweist jede Markierung in allen Erklärsätzen, allen Texten "Mehr dazu" (mit und ohne Modellzahlen) und allen Zeilen zum Teil im Layer auf eine ID des Glossars
     Und steht jede ID in mindestens einer Liste "Begriffe"
     Und ergibt jeder Text ohne Markierungen genau den Text vor SPEC-0010

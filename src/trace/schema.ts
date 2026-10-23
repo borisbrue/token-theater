@@ -16,6 +16,7 @@ const STATION_DEFS: Record<string, string> = {
   embed: 'EmbedStation',
   attention: 'AttentionStation',
   mlp: 'MlpStation',
+  moe: 'MoeStation',
   residual: 'ResidualStation',
   logits: 'LogitsStation',
   sample: 'SampleStation',

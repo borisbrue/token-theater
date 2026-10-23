@@ -96,6 +96,8 @@ export default tseslint.config(
       '.sdd/**',
       'tests/fixtures/**',
       'node_modules/**',
+      // venv des Python-Exporters (SPEC-0011), von uv angelegt
+      'scripts/moe-export/.venv/**',
     ],
   },
   {

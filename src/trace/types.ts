@@ -9,6 +9,7 @@ export type StationKind =
   | 'embed'
   | 'attention'
   | 'mlp'
+  | 'moe'
   | 'residual'
   | 'logits'
   | 'sample';
@@ -18,10 +19,16 @@ export const STATION_KINDS: readonly StationKind[] = [
   'embed',
   'attention',
   'mlp',
+  'moe',
   'residual',
   'logits',
   'sample',
 ];
+
+/** Arten des Feed-Forward-Teils eines Layers: dicht oder Mixture of Experts (SPEC-0011 §3.2). */
+export type FeedForwardKind = 'mlp' | 'moe';
+
+export const FEED_FORWARD_KINDS: readonly FeedForwardKind[] = ['mlp', 'moe'];
 
 export interface Token {
   id: number;
@@ -44,9 +51,13 @@ export interface Architecture {
   nLayers: number;
   nHeads: number;
   dModel: number;
+  /** Breite des MLP; bei MoE die Breite eines Experten. */
   dMlp: number;
   vocabSize: number;
   contextLength: number;
+  /** Nur bei MoE-Modellen (CON-0001 v0.5.0). */
+  nExperts?: number;
+  topK?: number;
 }
 
 export interface EngineInfo {
@@ -116,13 +127,29 @@ export interface MlpStation {
   out: Tensor;
 }
 
+/** Mixture-of-Experts-Teil eines Layers (SPEC-0011 §3.2, CON-0001 INV-18). */
+export interface MoeStation {
+  kind: 'moe';
+  layer: number;
+  /** Eingang nach der Norm, Form [n, D]. */
+  lnIn: Tensor;
+  /** Rohe Router-Bewertung je Token und Experte, Form [n, nExperts]. */
+  routerLogits: Tensor;
+  /** Je neue Position die gewählten Experten, absteigend nach Gate. */
+  experts: number[][];
+  /** Gate-Gewichte passend zu experts. */
+  gates: number[][];
+  /** Gemischte Ausgabe, die zum Residual Stream addiert wird, Form [n, D]. */
+  out: Tensor;
+}
+
 /** Höchstzahl der Lens-Kandidaten je Station (CON-0001 INV-17, CON-0016 L-03). */
 export const MAX_LENS_TOP_N = 20;
 
 export interface ResidualStation {
   kind: 'residual';
   layer: number;
-  after: 'attention' | 'mlp';
+  after: 'attention' | FeedForwardKind;
   stream: Tensor;
   /** Logit-Lens der letzten Position; absteigend nach prob, nicht renormiert (SPEC-0007 §3.3). */
   lens?: Candidate[];
@@ -149,6 +176,7 @@ export type Station =
   | EmbedStation
   | AttentionStation
   | MlpStation
+  | MoeStation
   | ResidualStation
   | LogitsStation
   | SampleStation;

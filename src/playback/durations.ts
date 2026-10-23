@@ -8,6 +8,7 @@ export const BASE_DURATIONS: Readonly<Record<StationKind, number>> = {
   attention: 2000,
   residual: 700,
   mlp: 1200,
+  moe: 1800,
   logits: 1500,
   sample: 1800,
 };

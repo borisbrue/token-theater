@@ -579,7 +579,7 @@ describe('G-07 Engine (Proxy)', () => {
     expect(engine.info).toEqual({
       kind: 'gpt2',
       model: 'Tiny GPT-2 (Test)',
-      capabilities: [...STATION_KINDS],
+      capabilities: STATION_KINDS.filter((kind) => kind !== 'moe'),
       architecture: {
         nLayers: 2,
         nHeads: 2,

@@ -23,7 +23,12 @@ export interface LayerGroup {
   layer: number | null;
   cells: LayerCell[];
   current: boolean;
+  /** Verdichtet: ein einzelnes Kästchen statt der Stationen (SPEC-0011 §3.5). */
+  collapsed: boolean;
 }
+
+/** Ab mehr Layern als diesen zeigt nur der aktuelle Layer seine Stationen (SPEC-0011 §3.5). */
+export const MAX_EXPANDED_LAYERS = 8;
 
 export interface LayerMapModel {
   groups: LayerGroup[];
@@ -38,6 +43,7 @@ const CELL_SHORT: Record<StationKind, string> = {
   attention: 'A',
   residual: '+',
   mlp: 'M',
+  moe: 'X',
   logits: 'LOG',
   sample: 'SMP',
 };
@@ -60,7 +66,7 @@ export function layerMap(stations: readonly Station[], current: number): LayerMa
     if (previous !== undefined && previous.kind === kind && previous.layer === layer) {
       return previous;
     }
-    const created: LayerGroup = { kind, layer, cells: [], current: false };
+    const created: LayerGroup = { kind, layer, cells: [], current: false, collapsed: false };
     groups.push(created);
     return created;
   };
@@ -73,6 +79,11 @@ export function layerMap(stations: readonly Station[], current: number): LayerMa
     target.cells.push({ station, index, short: CELL_SHORT[station.kind], current: isCurrent });
     if (isCurrent) target.current = true;
   });
+
+  const layerGroups = groups.filter((g) => g.kind === 'layer');
+  if (layerGroups.length > MAX_EXPANDED_LAYERS) {
+    for (const g of layerGroups) g.collapsed = !g.current;
+  }
 
   let place: LayerPlace | null = null;
   const currentGroup = groups.find((g) => g.current);

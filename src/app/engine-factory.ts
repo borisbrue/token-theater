@@ -1,4 +1,4 @@
-import { MockEngine, type MockEngineOptions } from '../engine/mock/mock-engine';
+import { MOCK_MOE, MockEngine, type MockEngineOptions } from '../engine/mock/mock-engine';
 import {
   DIALECT_MAX_TOP_N,
   RemoteEngine,
@@ -19,7 +19,7 @@ export type { Dialect, RemoteConfig };
  * Views und Playback sehen nur `InferenceEngine`. SPEC-0005 (remote) und SPEC-0006 ergänzen hier ihre Erzeuger.
  */
 
-export type EngineKind = 'mock' | 'remote' | 'gpt2';
+export type EngineKind = 'mock' | 'mock-moe' | 'remote' | 'gpt2';
 
 export interface EngineDeps {
   createRng(seed: number): Rng;
@@ -61,6 +61,8 @@ const FACTORIES: Record<EngineKind, Factory> = {
   // Die Mock-Engine ist deterministisch über weightSeed und braucht deps nicht. Zufall, IDs und
   // Zeit nutzen Generator und Recorder; spätere Engines (Remote, GPT-2) bekommen deps hier.
   mock: (_deps, options) => new MockEngine(options.mock),
+  // Mock-MoE (SPEC-0011 §3.3): dieselbe Engine mit Mixture of Experts statt MLP.
+  'mock-moe': (_deps, options) => new MockEngine({ ...options.mock, moe: MOCK_MOE }),
   remote: (_deps, options) => {
     if (options.remote === undefined) {
       throw new Error('Die Remote-Engine braucht options.remote (Basis-URL, Key, Modell, Dialekt)');

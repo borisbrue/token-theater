@@ -18,6 +18,7 @@ import { createLogitsRenderer, createSampleRenderer } from '../../views/distribu
 import { createEmbedRenderer } from '../../views/embedding/embed-renderer';
 import { createAttentionRenderer } from '../../views/attention/attention-renderer';
 import { createMlpRenderer } from '../../views/mlp/mlp-renderer';
+import { createMoeRenderer } from '../../views/moe/MoeView';
 import { createResidualRenderer } from '../../views/residual/residual-renderer';
 import type { ViewScales } from '../../views/tensor/labels';
 import { texts } from '../texts';
@@ -33,6 +34,7 @@ const RENDERERS: StationRenderers = {
   embed: createEmbedRenderer(texts.stationViews.embed, SCALES),
   attention: createAttentionRenderer(texts.stationViews.attention, SCALES),
   mlp: createMlpRenderer(texts.stationViews.mlp, SCALES),
+  moe: createMoeRenderer(texts.stationViews.moe, SCALES),
   residual: createResidualRenderer(texts.stationViews.residual, SCALES),
   logits: createLogitsRenderer(texts.distribution),
   sample: createSampleRenderer(texts.distribution),

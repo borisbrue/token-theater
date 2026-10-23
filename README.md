@@ -14,6 +14,9 @@ zurück, Tempo wählen.
   Heatmap je Kopf, KV-Cache, stärkste Neuronen, Logit-Lens nach jedem Layer.
 - **Logits und Sampling:** Wahrscheinlichkeiten der Kandidaten, Greedy oder Zufall mit
   Temperatur, Top-k, Top-p und Seed; ein Sampling-Labor zum Ausprobieren.
+- **Mixture of Experts:** Für MoE-Modelle zeigt die Station `moe`, welche Experten der Router
+  für jedes Token wählt, mit welchem Gate-Gewicht, und welchen Weg ein Token durch alle Layer
+  nimmt.
 - **Layer-Karte und Glossar:** Wo die Station im Modell liegt; jeder Fachbegriff lässt sich an Ort
   und Stelle nachschlagen.
 - **Präsentationsmodus:** Bühne ohne Formulare, große Schrift, Bedienung per Tastatur oder
@@ -25,6 +28,7 @@ zurück, Tempo wählen.
 | Engine          | Interna                 | Beschreibung                                                                                     |
 | --------------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
 | Mock            | ja                      | Kleines erfundenes Modell, sofort verfügbar                                                      |
+| Mock-MoE        | ja                      | Dasselbe mit Mixture of Experts (4 Experten, Top-2)                                              |
 | GPT-2 (Browser) | alle                    | Eigene GPT-2-Implementierung in TypeScript im Web Worker, Matrixrechnung in WebAssembly mit SIMD |
 | Server          | nur Tokens und Logprobs | OpenAI-kompatible Server (vLLM, MLX, llama.cpp …)                                                |
 
@@ -43,6 +47,20 @@ Dann `http://localhost:5173` öffnen. Ohne Gewichte steht die Mock-Engine zur Ve
 
 Server-Presets lassen sich über `.env.local` vorgeben, siehe `.env.example`. API-Keys gehören
 nicht dorthin: Die App fragt sie ab und speichert sie nicht.
+
+## Echte MoE-Modelle
+
+Ein MoE-Modell im Browser zu rechnen wäre zu groß. Stattdessen nimmt ein Python-Exporter den
+Lauf mit Hugging Face `transformers` auf und schreibt einen Trace, den die App über
+„Trace importieren“ lädt. Unterstützt sind Granite-MoE und Mixtral. Python-Werkzeuge laufen über
+[uv](https://docs.astral.sh/uv/):
+
+```sh
+npm run export-moe -- --model ibm-granite/granite-3.1-1b-a400m-base \
+  --prompt "Die Katze sitzt auf der" --max-tokens 8 --out granite.trace.json
+```
+
+Das Referenzmodell braucht 2,7 GB Download und läuft auf der CPU in wenigen Minuten.
 
 ## Entwicklung
 

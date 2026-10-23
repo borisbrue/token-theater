@@ -2,7 +2,8 @@
  * TST-0023 – Akzeptanztests für Layer-Karte und Glossar (CON-0021). Ein Test je Szenario aus
  * .sdd/contracts/behavior/glossary-ui.feature (Szenariogrundriss: ein Test je Beispiel),
  * Testname = Szenariotitel. Das GPT-2-Testmodell liefert page.route vom eigenen Origin.
- * „Glossar vollständig“ läuft ohne Browser gegen texts und parseTerms (SPEC-0010 §3.10).
+ * „Glossar vollständig“ läuft ohne Browser gegen texts und parseTerms (SPEC-0010 §3.10); seit
+ * SPEC-0011 mit den MoE-Begriffen (§3.7) und den Texten der Station moe (§3.6).
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -28,6 +29,7 @@ import { group, playback, stationRegion, tokenStream } from './player-helpers';
 const here = (path: string): string => fileURLToPath(new URL(path, import.meta.url));
 const FEATURE_PATH = here('../../.sdd/contracts/behavior/glossary-ui.feature');
 const SPEC_PATH = here('../../.sdd/specs/SPEC-0010-layer-map-and-glossary.md');
+const MOE_SPEC_PATH = here('../../.sdd/specs/SPEC-0011-moe-routing.md');
 const REFERENCE_PATH = here('../fixtures/glossary/texts-before-spec-0010.json');
 const fixture = (name: string): Buffer => readFileSync(here(`../fixtures/gpt2/${name}`));
 
@@ -279,11 +281,11 @@ async function expectInViewport(page: Page, locator: Locator, label: string): Pr
   expect(box.x + box.width, `${label}: rechts`).toBeLessThanOrEqual(viewport.width + 0.5);
 }
 
-// --- Spec-Tabellen (SPEC-0010 §3.4, §3.5) ---
+// --- Spec-Tabellen (SPEC-0010 §3.4, §3.5; SPEC-0011 §3.7) ---
 
 /** Zeilen der Markdown-Tabelle unter der Überschrift `heading`, ohne Kopf und Trennzeile. */
-function specTable(heading: string): string[][] {
-  const lines = readFileSync(SPEC_PATH, 'utf8').split('\n');
+function specTable(heading: string, path = SPEC_PATH): string[][] {
+  const lines = readFileSync(path, 'utf8').split('\n');
   const start = lines.findIndex((line) => line.startsWith(heading));
   expect(start, `Abschnitt ${heading}`).toBeGreaterThanOrEqual(0);
   const rows: string[][] = [];
@@ -307,7 +309,15 @@ function specTable(heading: string): string[][] {
 
 const stripCode = (cell: string): string => cell.replace(/^`|`$/g, '');
 
-const FACTS = { vocabSize: 50257, dModel: 8, dMlp: 32, nHeads: 2, nLayers: 2 };
+const FACTS = {
+  vocabSize: 50257,
+  dModel: 8,
+  dMlp: 32,
+  nHeads: 2,
+  nLayers: 2,
+  nExperts: 4,
+  topK: 2,
+};
 
 const STATIONS: readonly (readonly [string, Station])[] = (
   [
@@ -317,10 +327,30 @@ const STATIONS: readonly (readonly [string, Station])[] = (
     ['residual-attention', { kind: 'residual', layer: 0, after: 'attention' }],
     ['mlp', { kind: 'mlp', layer: 0 }],
     ['residual-mlp', { kind: 'residual', layer: 0, after: 'mlp' }],
+    ['moe', { kind: 'moe', layer: 0 }],
+    ['residual-moe', { kind: 'residual', layer: 0, after: 'moe' }],
     ['logits', { kind: 'logits' }],
     ['sample', { kind: 'sample' }],
   ] as const
 ).map(([key, station]) => [key, station as unknown as Station] as const);
+
+/** Texte der Arten nach SPEC-0010, ohne Markierungen (SPEC-0011 §3.6). */
+const MOE_EXPLANATION =
+  'Statt eines einzigen MLP hat dieser Layer viele Experten. Ein Router wählt für jedes Token wenige davon aus und mischt ihre Ergebnisse nach Gate-Gewichten.';
+const MOE_MORE_REST =
+  'Jeder Experte ist ein eigenes kleines MLP. So hat das Modell viele Parameter, rechnet je Token aber nur mit einem Teil davon.';
+const RESIDUAL_MOE_MORE =
+  'Nach den Experten ist ein Layer fertig; der Strom geht an den nächsten Layer oder, nach dem letzten, an die Ausgabe. Die Logit-Lens zeigt, welches Token das Modell vorhersagen würde, wenn es hier aufhörte.';
+const AFTER_SPEC_0010: Readonly<Record<string, { none: string; facts: string }>> = {
+  moe: {
+    none: MOE_MORE_REST,
+    facts: `Dieses Modell hat 4 Experten je MoE-Layer; je Token rechnen 2 davon. ${MOE_MORE_REST}`,
+  },
+  'residual-moe': {
+    none: RESIDUAL_MOE_MORE,
+    facts: `${RESIDUAL_MOE_MORE} Das Modell hat 2 Layer, gezählt ab 0.`,
+  },
+};
 
 const plain = (text: string): string =>
   parseTerms(text)
@@ -491,7 +521,7 @@ test(T.view, async ({ page }) => {
   await expect(glossaryButton).toHaveAttribute('aria-pressed', 'true');
   const region = page.getByRole('region', { name: 'Glossar', exact: true });
   const terms = region.locator('dt');
-  await expect(terms).toHaveCount(33);
+  await expect(terms).toHaveCount(37);
   const names = await terms.allTextContents();
   expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, 'de')));
   expect(names[0]).toBe('Attention');
@@ -512,8 +542,8 @@ test(T.complete, () => {
   const entries = texts.glossary.entries as Readonly<
     Record<string, { term: string; meaning: string; inApp: string }>
   >;
-  const table = specTable('### 3.4 Glossar');
-  expect(table).toHaveLength(33);
+  const table = [...specTable('### 3.4 Glossar'), ...specTable('### 3.7 Glossar', MOE_SPEC_PATH)];
+  expect(table).toHaveLength(37);
   expect(Object.keys(entries).sort()).toEqual(table.map((row) => row[0]).sort());
   for (const [id, term, meaning, inApp] of table) {
     expect(entries[id ?? ''], `Eintrag ${id}`).toEqual({ term, meaning, inApp });
@@ -527,14 +557,17 @@ test(T.complete, () => {
   const marked: string[] = [];
   for (const [kind, sentence] of Object.entries(texts.station.explanations)) {
     marked.push(sentence);
-    expect(plain(sentence), `Satz ${kind}`).toBe(reference.explanations[kind]);
+    expect(plain(sentence), `Satz ${kind}`).toBe(
+      kind === 'moe' ? MOE_EXPLANATION : reference.explanations[kind],
+    );
   }
   for (const [key, station] of STATIONS) {
     const none = texts.station.more(station, null);
     const facts = texts.station.more(station, FACTS);
     marked.push(none, facts);
-    expect(plain(none), `Mehr dazu ${key} ohne Zahlen`).toBe(reference.more[key]?.none);
-    expect(plain(facts), `Mehr dazu ${key} mit Zahlen`).toBe(reference.more[key]?.facts);
+    const expected = AFTER_SPEC_0010[key] ?? reference.more[key];
+    expect(plain(none), `Mehr dazu ${key} ohne Zahlen`).toBe(expected?.none);
+    expect(plain(facts), `Mehr dazu ${key} mit Zahlen`).toBe(expected?.facts);
     marked.push(texts.station.layerPart(station, null));
     if ('layer' in station) {
       marked.push(texts.station.layerPart(station, { layer: 1, part: 2, parts: 4 }));
@@ -547,6 +580,13 @@ test(T.complete, () => {
   const byStation = texts.glossary.byStation as Readonly<Record<StationKind, readonly string[]>>;
   const listed = new Set(Object.values(byStation).flat());
   for (const id of ids) expect(listed.has(id), `Begriff ${id} in einer Liste`).toBe(true);
+  expect(byStation.moe, 'Begriffe moe (SPEC-0011 §3.7)').toEqual([
+    'moe',
+    'router',
+    'expert',
+    'gate',
+    'layerNorm',
+  ]);
   for (const [kind, list] of specTable('### 3.5 Begriffe je Station')) {
     expect(byStation[kind as StationKind], `Begriffe ${kind}`).toEqual(
       (list ?? '').split(',').map((id) => stripCode(id.trim())),

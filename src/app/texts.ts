@@ -31,6 +31,12 @@ function moreAbout(station: Station, facts: ModelFacts | null): string {
         )
       );
     case 'residual':
+      if (station.after === 'moe') {
+        return (
+          'Nach den [[expert|Experten]] ist ein Layer fertig; der Strom geht an den nächsten Layer oder, nach dem letzten, an die Ausgabe. Die [[logitLens|Logit-Lens]] zeigt, welches Token das Modell vorhersagen würde, wenn es hier aufhörte.' +
+          withFacts(facts, (f) => `Das Modell hat ${formatInteger(f.nLayers)} Layer, gezählt ab 0.`)
+        );
+      }
       return station.after === 'attention'
         ? 'Der [[residual|Residual Stream]] ist wie ein Notizblock, der durch alle [[layer|Layer]] gereicht wird. Die Attention schreibt ihr Ergebnis dazu, statt ihn zu ersetzen. So kommt die ursprüngliche Information unverändert bei den späteren Layern an.' +
             withFacts(facts, (f) => `Er hat ${formatInteger(f.dModel)} Dimensionen.`)
@@ -48,6 +54,15 @@ function moreAbout(station: Station, facts: ModelFacts | null): string {
             `Hier: ${formatInteger(f.dModel)} → ${formatInteger(f.dMlp)} → ${formatInteger(f.dModel)} Zahlen.`,
         )
       );
+    case 'moe': {
+      const rest =
+        'Jeder [[expert|Experte]] ist ein eigenes kleines MLP. So hat das Modell viele Parameter, rechnet je Token aber nur mit einem Teil davon.';
+      const experts = facts?.nExperts ?? null;
+      const topK = facts?.topK ?? null;
+      return experts === null || topK === null
+        ? rest
+        : `Dieses Modell hat ${formatInteger(experts)} Experten je MoE-Layer; je Token rechnen ${formatInteger(topK)} davon. ${rest}`;
+    }
     case 'logits':
       return (
         'Der letzte Vektor wird normiert und mit der Embedding-Tabelle verglichen: Je ähnlicher er der Zeile eines Tokens ist, desto höher dessen Bewertung ([[logit|Logit]]). [[softmax|Softmax]] macht daraus Wahrscheinlichkeiten, die sich zu 100 % addieren.' +
@@ -81,6 +96,8 @@ function layerPart(station: Station, place: LayerPlace | null): string {
         : `${head}Sein Ergebnis wird addiert; der Layer ist fertig.`;
     case 'mlp':
       return `${head}Das MLP verarbeitet jedes Token für sich.`;
+    case 'moe':
+      return `${head}Der [[router|Router]] schickt jedes Token an wenige [[expert|Experten]].`;
     case 'logits':
     case 'sample':
       return 'Nach den [[layer|Layern]]: Aus dem letzten Vektor wird das nächste Token.';
@@ -142,6 +159,7 @@ export const texts = {
     layer: 'Layer',
     afterAttention: 'nach Attention',
     afterMlp: 'nach MLP',
+    afterMoe: 'nach MoE',
     tensors: 'Tensoren',
     candidates: 'Kandidaten',
     moreSummary: 'Mehr dazu',
@@ -157,6 +175,7 @@ export const texts = {
       residual:
         'Das Ergebnis wird zum laufenden [[residual|Datenstrom]] addiert. Nichts geht verloren, es kommt nur etwas hinzu.',
       mlp: 'Ein kleines [[mlp|neuronales Netz]] verarbeitet jedes Token einzeln weiter und verknüpft das Gelernte.',
+      moe: 'Statt eines einzigen [[mlp|MLP]] hat dieser Layer viele [[expert|Experten]]. Ein [[router|Router]] wählt für jedes Token wenige davon aus und mischt ihre Ergebnisse nach [[gate|Gate-Gewichten]].',
       logits:
         'Aus dem letzten Vektor entsteht für jedes Wort im [[vocabulary|Vokabular]] eine [[logit|Bewertung]] und daraus eine Wahrscheinlichkeit.',
       sample: 'Aus den [[softmax|Wahrscheinlichkeiten]] wird das nächste Token gewählt.',
@@ -165,6 +184,7 @@ export const texts = {
   remote: {
     group: 'Engine',
     mock: 'Mock',
+    mockMoe: 'Mock-MoE',
     server: 'Server',
     profile: 'Profil',
     ownProfile: 'Eigene Angaben',
@@ -280,8 +300,8 @@ export const texts = {
         stream: 'Residual Stream',
         trajectory: 'Verlauf',
         embed: 'embed',
-        entry: (layer: number, after: 'attention' | 'mlp'): string =>
-          `Layer ${layer} · ${after === 'attention' ? 'nach Attention' : 'nach MLP'}`,
+        entry: (layer: number, after: 'attention' | 'mlp' | 'moe'): string =>
+          `Layer ${layer} · ${{ attention: 'nach Attention', mlp: 'nach MLP', moe: 'nach MoE' }[after]}`,
         normEntry: (name: string, norm: string): string => `${name} ‖x‖ = ${norm}`,
         delta: (delta: string): string => `(Δ ${delta})`,
         lens: 'Logit-Lens',
@@ -289,6 +309,22 @@ export const texts = {
         lensAfterMlp: 'Die Logit-Lens gibt es nach jedem MLP.',
         noLens: 'Dieser Trace enthält keine Logit-Lens.',
         lensLastPosition: 'Die Logit-Lens gilt für die letzte Position.',
+      },
+      moe: {
+        ...shared,
+        routing: 'Routing',
+        expertHead: (expert: number): string => `E${expert}`,
+        rowHead: (position: number, token: string): string => `${position} · ${token}`,
+        cell: (expert: number, router: string): string => `Experte ${expert}: Router ${router}`,
+        chosenCell: (expert: number, router: string, gate: string): string =>
+          `Experte ${expert}: Router ${router}, gewählt, Gate ${gate}`,
+        percent: (value: number): string => `${Math.round(value * 100)} %`,
+        chosen: 'Gewählte Experten',
+        chosenEntry: (expert: number, gate: string): string => `Experte ${expert} · ${gate}`,
+        gateSum: (sum: string): string => `Summe der Gates: ${sum}`,
+        allLayers: 'Experten dieses Tokens in allen Layern',
+        layerHead: (layer: number): string => `Layer ${layer}`,
+        dense: 'dicht',
       },
     };
   })(),

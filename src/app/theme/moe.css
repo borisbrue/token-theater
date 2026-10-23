@@ -1,0 +1,113 @@
+/* MoE-Routing und verdichtete Layer-Karte (SPEC-0011); nur var(--tt-…). */
+
+/* ── Verdichtete Layer-Gruppe: ein Kästchen statt vier ── */
+.layer-group:has(> ol > .layer-cell-collapsed) {
+  padding: 0;
+  border-color: transparent;
+}
+
+.layer-cell-collapsed {
+  color: var(--tt-text-soft);
+}
+
+/* ── Tabellen der moe-Station ── */
+.moe-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.moe-table {
+  border-collapse: separate;
+  border-spacing: 2px;
+  margin: 0 0 12px;
+  font-family: var(--tt-font-mono);
+  font-size: 11px;
+}
+
+.moe-table caption {
+  margin: 4px 0;
+  color: var(--tt-text-soft);
+  font-family: var(--tt-font-body);
+  font-size: 13px;
+  text-align: left;
+}
+
+.moe-table th {
+  padding: 0 2px;
+  color: var(--tt-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.moe-table th[scope='row'] {
+  text-align: right;
+}
+
+.moe-table td {
+  /* 32 Experten passen bei 1280 px in die Stationsregion. */
+  min-width: 28px;
+  height: 20px;
+  padding: 0 1px;
+  border-radius: 3px;
+  background: var(--tt-surface-2);
+  color: var(--tt-text);
+  text-align: center;
+}
+
+.moe-table td.chosen {
+  outline: 2px solid var(--tt-mint);
+  outline-offset: -2px;
+  text-shadow: 0 0 3px var(--tt-bg);
+  font-weight: 600;
+}
+
+.moe-layers td.chosen {
+  background: var(--tt-tint-mint);
+  color: var(--tt-mint);
+}
+
+.moe-table tr.selected th,
+.moe-table tr.current th {
+  color: var(--tt-cyan);
+}
+
+.moe-layers tr.current td {
+  box-shadow: inset 0 -2px 0 var(--tt-cyan);
+}
+
+/* ── Gewählte Experten ── */
+.moe-chosen {
+  display: grid;
+  gap: 4px;
+  max-width: 420px;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+  font-family: var(--tt-font-mono);
+  font-size: 12px;
+}
+
+.moe-chosen li {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.moe-chosen li > span:first-child {
+  white-space: nowrap;
+}
+
+.moe-bar {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--tt-surface-2);
+  overflow: hidden;
+}
+
+.moe-bar span {
+  display: block;
+  height: 100%;
+  background: var(--tt-gradient-data);
+}

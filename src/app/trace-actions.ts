@@ -39,6 +39,7 @@ function appDeps(): EngineDeps {
 /** Welche Engine einen Lauf rechnet (SPEC-0005 §3.7). */
 export type EngineChoice =
   | { kind: 'mock' }
+  | { kind: 'mock-moe' }
   | {
       kind: 'remote';
       baseUrl: string;
@@ -72,6 +73,7 @@ async function engineFor(
   options: GenerateOptions,
 ): Promise<PreparedEngine> {
   if (choice.kind === 'mock') return { engine: createEngine('mock', deps), keep: false };
+  if (choice.kind === 'mock-moe') return { engine: createEngine('mock-moe', deps), keep: false };
   if (choice.kind === 'gpt2') {
     const engine = await gpt2EngineFor(choice.model, deps, options.onLoadProgress, options.signal);
     return { engine, keep: true };

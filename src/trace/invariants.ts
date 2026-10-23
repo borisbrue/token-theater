@@ -1,8 +1,8 @@
 import { base64ToBytes, base64ToFloat32 } from './base64';
-import type { ImportIssue } from './types';
+import { FEED_FORWARD_KINDS, type ImportIssue } from './types';
 
 /**
- * Semantische Invarianten INV-01 bis INV-13 und INV-15 bis INV-17 aus CON-0001 auf dem serialisierten
+ * Semantische Invarianten INV-01 bis INV-13 und INV-15 bis INV-18 aus CON-0001 auf dem serialisierten
  * Trace (Tensordaten als Base64). Erwartet ein schema-gültiges Objekt; fehlende Teile werden
  * übersprungen statt zu werfen.
  */
@@ -41,6 +41,8 @@ interface SArchitecture {
   dMlp: number;
   vocabSize: number;
   contextLength: number;
+  nExperts?: number;
+  topK?: number;
 }
 
 interface SBpeWord {
@@ -64,7 +66,9 @@ interface STrace {
   error?: unknown;
 }
 
-const INTERNAL_KINDS = ['embed', 'attention', 'mlp', 'residual'];
+const INTERNAL_KINDS = ['embed', 'attention', 'mlp', 'moe', 'residual'];
+const FEED_FORWARD: readonly string[] = FEED_FORWARD_KINDS;
+const GATE_SUM_TOLERANCE = 1e-5;
 const ROW_SUM_TOLERANCE = 1e-5;
 const PROB_SUM_TOLERANCE = 1e-6;
 
@@ -109,8 +113,32 @@ class Collector {
   }
 }
 
+/**
+ * Feed-Forward-Art je Layer (INV-05 seit v0.5.0). Die Engine legt sie fest (CON-0001 INV-06); der
+ * Trace verrät sie durch die mlp/moe-Station des Layers oder, fehlt diese Fähigkeit, durch `after`
+ * der folgenden residual-Station. Ohne beides gilt die einzige gelieferte Art, sonst `mlp`.
+ */
+function feedForwardOf(stations: SStation[], capabilities: Set<string>, layer: number): string {
+  const station = stations.find((s) => FEED_FORWARD.includes(s.kind) && s.layer === layer);
+  if (station !== undefined && capabilities.has(station.kind)) return station.kind;
+  const residual = stations.find(
+    (s) =>
+      s.kind === 'residual' &&
+      s.layer === layer &&
+      typeof s.after === 'string' &&
+      FEED_FORWARD.includes(s.after),
+  );
+  if (station === undefined && residual?.after !== undefined) return residual.after;
+  return capabilities.has('mlp') || !capabilities.has('moe') ? 'mlp' : 'moe';
+}
+
 /** Erwartete Abfolge (kind/layer/after) der Stationen eines Schritts (INV-05). */
-function expectedSequence(capabilities: Set<string>, layers: number, first: boolean): string[] {
+function expectedSequence(
+  capabilities: Set<string>,
+  layers: number,
+  first: boolean,
+  stations: SStation[],
+): string[] {
   const sequence: string[] = [];
   if (first && capabilities.has('tokenize')) {
     sequence.push('tokenize');
@@ -121,8 +149,9 @@ function expectedSequence(capabilities: Set<string>, layers: number, first: bool
   for (let layer = 0; layer < layers; layer += 1) {
     if (capabilities.has('attention')) sequence.push(`attention/${layer}`);
     if (capabilities.has('residual')) sequence.push(`residual/${layer}/attention`);
-    if (capabilities.has('mlp')) sequence.push(`mlp/${layer}`);
-    if (capabilities.has('residual')) sequence.push(`residual/${layer}/mlp`);
+    const ff = feedForwardOf(stations, capabilities, layer);
+    if (capabilities.has(ff)) sequence.push(`${ff}/${layer}`);
+    if (capabilities.has('residual')) sequence.push(`residual/${layer}/${ff}`);
   }
   sequence.push('logits', 'sample');
   return sequence;
@@ -132,7 +161,7 @@ function describeStation(station: SStation): string {
   if (station.kind === 'residual') {
     return `residual/${String(station.layer)}/${String(station.after)}`;
   }
-  if (station.kind === 'attention' || station.kind === 'mlp') {
+  if (station.kind === 'attention' || FEED_FORWARD.includes(station.kind)) {
     return `${station.kind}/${String(station.layer)}`;
   }
   return station.kind;
@@ -175,6 +204,10 @@ function tensorShapes(
       return { lnIn: row, q: row, k: row, v: row, weights: [arch.nHeads, n, b], out: row };
     case 'mlp':
       return { lnIn: row, hidden: [n, arch.dMlp], out: row };
+    case 'moe':
+      return arch.nExperts === undefined
+        ? { lnIn: row, out: row }
+        : { lnIn: row, routerLogits: [n, arch.nExperts], out: row };
     case 'residual':
       return { stream: row };
     default:
@@ -272,6 +305,85 @@ function checkLens(
   }
 }
 
+/** Router-Logits als Zeilen, wenn Form und Daten stimmen (sonst meldet INV-01/INV-08). */
+function routerRows(station: SStation, n: number, experts: number): number[][] | undefined {
+  const tensor = station['routerLogits'];
+  if (!isTensor(tensor) || !sameShape(tensor.shape, [n, experts])) return undefined;
+  let values: Float32Array;
+  try {
+    values = base64ToFloat32(tensor.data);
+  } catch {
+    return undefined;
+  }
+  if (values.length !== n * experts) return undefined;
+  return Array.from({ length: n }, (_, i) =>
+    Array.from(values.subarray(i * experts, (i + 1) * experts)),
+  );
+}
+
+/** INV-18: Zeilen, Top-k-Wahl und Gates einer moe-Station. */
+function checkRouting(
+  station: SStation,
+  n: number,
+  arch: SArchitecture,
+  path: string,
+  out: Collector,
+): void {
+  const { nExperts, topK } = arch;
+  const experts = station['experts'];
+  const gates = station['gates'];
+  if (nExperts === undefined || topK === undefined) return;
+  if (!Array.isArray(experts) || !Array.isArray(gates)) return;
+  if (experts.length !== n || gates.length !== n) {
+    out.add(
+      'INV-18',
+      `${path}/experts`,
+      `experts/gates haben ${experts.length}/${gates.length} Zeilen statt ${n}`,
+    );
+  }
+  const logits = routerRows(station, n, nExperts);
+  experts.forEach((row: unknown, i) => {
+    if (!Array.isArray(row)) return;
+    const ids = row as number[];
+    const rowPath = `${path}/experts/${i}`;
+    if (ids.length !== topK) {
+      out.add('INV-18', rowPath, `${ids.length} Experten statt topK ${topK}`);
+    }
+    if (new Set(ids).size !== ids.length) {
+      out.add('INV-18', rowPath, 'Experten-IDs kommen mehrfach vor');
+    }
+    const outside = ids.find((id) => !Number.isInteger(id) || id < 0 || id >= nExperts);
+    if (outside !== undefined) {
+      out.add('INV-18', rowPath, `Experte ${outside} liegt nicht in 0 … ${nExperts - 1}`);
+    }
+    const values = logits?.[i];
+    if (values !== undefined && outside === undefined) {
+      const chosen = new Set(ids);
+      const weakestChosen = Math.min(...ids.map((id) => values[id] ?? -Infinity));
+      const strongestOther = Math.max(-Infinity, ...values.filter((_, e) => !chosen.has(e)));
+      if (weakestChosen < strongestOther) {
+        out.add('INV-18', rowPath, 'Ein nicht gewählter Experte hat eine höhere Router-Bewertung');
+      }
+    }
+  });
+  gates.forEach((row: unknown, i) => {
+    if (!Array.isArray(row)) return;
+    const values = row as number[];
+    const rowPath = `${path}/gates/${i}`;
+    const expertRow: unknown = experts[i];
+    if (Array.isArray(expertRow) && expertRow.length !== values.length) {
+      out.add('INV-18', rowPath, `${values.length} Gates für ${expertRow.length} Experten`);
+    }
+    if (values.some((g, j) => j > 0 && g > (values[j - 1] ?? 0))) {
+      out.add('INV-18', rowPath, 'Gates sind nicht absteigend');
+    }
+    const sum = values.reduce((total, g) => total + g, 0);
+    if (sum > 1 + GATE_SUM_TOLERANCE) {
+      out.add('INV-18', rowPath, `Gates summieren sich zu ${sum}`);
+    }
+  });
+}
+
 function checkStepStations(trace: STrace, step: SStep, stepPath: string, out: Collector): void {
   const { architecture: arch } = trace.engine;
   const capabilities = new Set(trace.engine.capabilities);
@@ -279,7 +391,12 @@ function checkStepStations(trace: STrace, step: SStep, stepPath: string, out: Co
   const n = b - a;
 
   // INV-05
-  const expected = expectedSequence(capabilities, arch?.nLayers ?? 0, step.index === 0);
+  const expected = expectedSequence(
+    capabilities,
+    arch?.nLayers ?? 0,
+    step.index === 0,
+    step.stations,
+  );
   const actual = step.stations.map(describeStation);
   if (actual.length !== expected.length || actual.some((entry, i) => entry !== expected[i])) {
     out.add('INV-05', stepPath, `Stationen [${actual.join(', ')}] statt [${expected.join(', ')}]`);
@@ -313,6 +430,10 @@ function checkStepStations(trace: STrace, step: SStep, stepPath: string, out: Co
           }
         });
       }
+    }
+    // INV-18
+    if (station.kind === 'moe' && arch !== null) {
+      checkRouting(station, n, arch, stationPath, out);
     }
     // INV-17
     if (station.kind === 'residual' && Array.isArray(station['lens'])) {
@@ -411,9 +532,20 @@ function checkSteps(trace: STrace, out: Collector): void {
 
 function checkEngine(trace: STrace, out: Collector): void {
   const { architecture: arch, capabilities, eosTokenId: eos } = trace.engine;
-  // INV-06 (Interna brauchen eine Architektur)
+  // INV-06 (Interna brauchen eine Architektur, moe dazu nExperts und topK)
   if (arch === null && capabilities.some((kind) => INTERNAL_KINDS.includes(kind))) {
     out.add('INV-06', '/engine', 'Fähigkeiten mit Interna, aber architecture ist null');
+  }
+  if (arch !== null && capabilities.includes('moe')) {
+    if (arch.nExperts === undefined || arch.topK === undefined) {
+      out.add('INV-06', '/engine/architecture', 'moe ohne nExperts und topK');
+    } else if (arch.topK > arch.nExperts) {
+      out.add(
+        'INV-06',
+        '/engine/architecture/topK',
+        `topK ${arch.topK} > nExperts ${arch.nExperts}`,
+      );
+    }
   }
   // INV-13 (eosTokenId)
   if (arch !== null && eos !== null && eos >= arch.vocabSize) {

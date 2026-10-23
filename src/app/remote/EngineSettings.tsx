@@ -15,7 +15,7 @@ const DIALECTS: readonly DialectChoice[] = ['auto', 'legacy', 'content'];
 const OWN_PROFILE = '';
 const MODELS_LIST_ID = 'remote-models';
 
-export type EngineKind = 'mock' | 'remote' | 'gpt2';
+export type EngineKind = 'mock' | 'mock-moe' | 'remote' | 'gpt2';
 
 export interface EngineSettingsProps {
   engine: EngineKind;
@@ -84,6 +84,15 @@ export function EngineSettings(props: EngineSettingsProps) {
             onChange={() => onEngine('mock')}
           />
           {labels.mock}
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="engine"
+            checked={engine === 'mock-moe'}
+            onChange={() => onEngine('mock-moe')}
+          />
+          {labels.mockMoe}
         </label>
         <label>
           <input

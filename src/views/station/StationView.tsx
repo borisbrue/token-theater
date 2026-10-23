@@ -60,6 +60,7 @@ const TENSOR_FIELDS: Record<StationKind, readonly string[]> = {
   embed: ['token', 'position', 'sum'],
   attention: ['lnIn', 'q', 'k', 'v', 'weights', 'out'],
   mlp: ['lnIn', 'hidden', 'out'],
+  moe: ['lnIn', 'routerLogits', 'out'],
   residual: ['stream'],
   logits: [],
   sample: [],

@@ -64,7 +64,7 @@
   },
   "$defs": {
     "StationKind": {
-      "enum": ["tokenize", "embed", "attention", "mlp", "residual", "logits", "sample"]
+      "enum": ["tokenize", "embed", "attention", "mlp", "moe", "residual", "logits", "sample"]
     },
     "EngineInfo": {
       "type": "object",
@@ -127,6 +127,14 @@
                   "minimum": 1
                 },
                 "contextLength": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "nExperts": {
+                  "type": "integer",
+                  "minimum": 2
+                },
+                "topK": {
                   "type": "integer",
                   "minimum": 1
                 }
@@ -291,6 +299,9 @@
           "$ref": "#/$defs/MlpStation"
         },
         {
+          "$ref": "#/$defs/MoeStation"
+        },
+        {
           "$ref": "#/$defs/ResidualStation"
         },
         {
@@ -391,6 +402,53 @@
         }
       }
     },
+    "MoeStation": {
+      "type": "object",
+      "required": ["kind", "layer", "lnIn", "routerLogits", "experts", "gates", "out"],
+      "properties": {
+        "kind": {
+          "const": "moe"
+        },
+        "layer": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lnIn": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "routerLogits": {
+          "$ref": "#/$defs/Tensor"
+        },
+        "experts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "gates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "out": {
+          "$ref": "#/$defs/Tensor"
+        }
+      }
+    },
     "ResidualStation": {
       "type": "object",
       "required": ["kind", "layer", "after", "stream"],
@@ -403,7 +461,7 @@
           "minimum": 0
         },
         "after": {
-          "enum": ["attention", "mlp"]
+          "enum": ["attention", "mlp", "moe"]
         },
         "stream": {
           "$ref": "#/$defs/Tensor"

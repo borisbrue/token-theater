@@ -1,0 +1,11 @@
+{
+  "description": "SHA-256 serialisierter Mock-Traces vor SPEC-0011 (CON-0023 MS-05): MockEngine weightSeed 1234, Prompt \"die katze sitzt\", 3 Tokens, Greedy, Seed 42, FIXED_ID, FIXED_CLOCK.",
+  "full": {
+    "sha256": "d22e6039306cf26b33bad7eef1b8014e85d6e6577df180a183a4fa428e032e72",
+    "bytes": 43791
+  },
+  "withoutInternals": {
+    "sha256": "c7296909e4139fc6ebd299b27231445cd7b28dca7d26184f05a61d462516fc82",
+    "bytes": 29580
+  }
+}

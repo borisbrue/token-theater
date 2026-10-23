@@ -1,4 +1,4 @@
-import type { Station } from '../../trace/types';
+import type { ResidualStation, Station } from '../../trace/types';
 import { l2Norm, tensorRow } from './tensor-math';
 
 /** Verlauf des Residual Stream über die Stationen eines Schritts (SPEC-0007 §3.7, CON-0017 V-08). */
@@ -10,7 +10,7 @@ export interface TrajectoryEntry {
   /** null bei embed. */
   layer: number | null;
   /** null bei embed. */
-  after: 'attention' | 'mlp' | null;
+  after: ResidualStation['after'] | null;
   norm: number;
   /** null beim ersten Eintrag. */
   delta: number | null;

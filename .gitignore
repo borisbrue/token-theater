@@ -18,3 +18,9 @@ test-results/
 # GPT-2-Gewichte (npm run fetch-model, SPEC-0006)
 public/models/*
 !public/models/.gitkeep
+
+# Python-Exporter für MoE-Traces (SPEC-0011, uv)
+scripts/moe-export/.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/

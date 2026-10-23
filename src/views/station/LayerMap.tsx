@@ -38,20 +38,28 @@ export function LayerMap({
             aria-label={label}
             className={`layer-group layer-group-${group.kind}${group.current ? ' current' : ''}`}
           >
-            <span className="layer-group-short" aria-hidden>
-              {short}
-            </span>
+            {!group.collapsed && (
+              <span className="layer-group-short" aria-hidden>
+                {short}
+              </span>
+            )}
             <ol>
-              {group.cells.map((cell) => (
-                <li
-                  key={cell.index}
-                  aria-label={stationName(cell.station, names)}
-                  aria-current={cell.current ? 'step' : undefined}
-                  className={`layer-cell layer-cell-${cell.station.kind}`}
-                >
-                  {cell.short}
+              {group.collapsed && (
+                <li aria-label={label} className="layer-cell layer-cell-collapsed">
+                  {short}
                 </li>
-              ))}
+              )}
+              {!group.collapsed &&
+                group.cells.map((cell) => (
+                  <li
+                    key={cell.index}
+                    aria-label={stationName(cell.station, names)}
+                    aria-current={cell.current ? 'step' : undefined}
+                    className={`layer-cell layer-cell-${cell.station.kind}`}
+                  >
+                    {cell.short}
+                  </li>
+                ))}
             </ol>
           </li>
         );

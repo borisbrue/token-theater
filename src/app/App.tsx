@@ -154,6 +154,7 @@ export function App() {
   function engineChoice(): EngineChoice {
     if (engine === 'remote') return { kind: 'remote', ...remote, apiKey };
     if (engine === 'mock') return { kind: 'mock' };
+    if (engine === 'mock-moe') return { kind: 'mock-moe' };
     const model = gpt2Models?.find((m) => m.id === gpt2Model);
     if (model === undefined) throw new Error(texts.gpt2.noModels);
     return { kind: 'gpt2', model };
@@ -378,7 +379,7 @@ export function App() {
             <button type="submit" disabled={!canGenerate}>
               {busy ? texts.generating : texts.generate}
             </button>
-            {busy && engine !== 'mock' && (
+            {busy && engine !== 'mock' && engine !== 'mock-moe' && (
               <div className="run-status">
                 {progress !== null && <span>{progress}</span>}
                 <button type="button" onClick={() => running.current?.abort()}>

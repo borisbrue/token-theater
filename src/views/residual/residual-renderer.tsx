@@ -13,7 +13,7 @@ export interface ResidualLabels extends TensorViewLabels {
   stream: string;
   trajectory: string;
   embed: string;
-  entry: (layer: number, after: 'attention' | 'mlp') => string;
+  entry: (layer: number, after: ResidualStation['after']) => string;
   normEntry: (name: string, norm: string) => string;
   delta: (delta: string) => string;
   lens: string;
