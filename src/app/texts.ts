@@ -2,7 +2,7 @@ import type { Station } from '../trace/types';
 import { formatInteger } from '../views/distribution/format';
 import type { ModelFacts } from '../views/station/explanation';
 import type { LayerPlace } from '../views/station/layer-map';
-import { GLOSSARY, TERMS_BY_STATION } from './glossary-texts';
+import { GLOSSARY, TERMS_BY_STATION, TERMS_BY_VIEW } from './glossary-texts';
 
 /** Satz mit Zahl nur, wenn das Modell bekannt ist (SPEC-0009 §3.4). */
 const withFacts = (facts: ModelFacts | null, sentence: (f: ModelFacts) => string): string =>
@@ -333,10 +333,88 @@ export const texts = {
     run: 'Durchlauf',
     tokenizer: 'Tokenizer',
     glossary: 'Glossar',
+    compare: 'Vergleich',
+    probe: 'Sonde',
+  },
+  /** Ansicht „Vergleich“ (SPEC-0012 §3.3, §3.6). */
+  compare: {
+    region: 'Vergleich',
+    heading: 'Vergleich',
+    intro:
+      'Zwei Läufe mit verschiedenen Prompts nebeneinander: Lauf B ist ein [[counterfactual|Gegenfakt]] zu Lauf A. Die Tabellen zeigen, wo die Läufe auseinandergehen.',
+    importLabel: 'Vergleichstrace importieren',
+    runs: 'Läufe',
+    run: (side: string, model: string, prompt: string): string =>
+      `${side} · ${model} · „${prompt}“`,
+    noA: 'Erzeuge zuerst einen Lauf oder importiere einen Trace; er wird Lauf A.',
+    noB: 'Importiere einen Vergleichstrace; er wird Lauf B.',
+    none: 'Verschiedene Vokabulare: Die Läufe sind nicht vergleichbar.',
+    otherModels: 'Verschiedene Modelle: verglichen wird nur die Ausgabe.',
+    noInternals: 'Ein Lauf hat keine Interna: verglichen wird nur die Ausgabe.',
+    step: 'Schritt',
+    stepOption: (index: number): string => `Schritt ${index}`,
+    chosen: (a: string, b: string): string => `A wählt „${a}“ · B wählt „${b}“`,
+    output: 'Ausgabe',
+    token: 'Token',
+    pA: 'p A',
+    pB: 'p B',
+    delta: 'Δ (Prozentpunkte)',
+    js: (value: string): string =>
+      `[[jsDivergence|JS-Divergenz]]: ${value} (0 = gleich, 1 = ohne Überschneidung)`,
+    layers: 'Layer',
+    layer: 'Layer',
+    cosine: 'Kosinus',
+    lensA: 'Lens A',
+    lensB: 'Lens B',
+    experts: 'Experten gemeinsam',
+    layerHead: (layer: number): string => `Layer ${layer}`,
+    expertShare: (shared: number, total: number): string => `${shared} von ${total}`,
+    missing: '–',
+    layerHint:
+      '[[cosine|Kosinus-Ähnlichkeit]] der letzten Position nach jedem Layer: 1 heißt gleiche Richtung. Die Lens zeigt, was das Modell dort vorhersagen würde.',
+    drop: (layer: number): string => `Größter Abfall der Ähnlichkeit: Layer ${layer}`,
+  },
+  /** Ansicht „Sonde“ (SPEC-0012 §3.5, §3.6). */
+  probe: {
+    region: 'Sonde',
+    heading: 'Sonde',
+    intro:
+      'Eine [[probe|Sonde]] schickt viele Prompt-Paare durch ein Modell. Den Bericht erzeugt das Python-Werkzeug „npm run probe“; hier wird er angezeigt.',
+    importLabel: 'Sonden-Bericht importieren',
+    empty: 'Noch kein Bericht geladen.',
+    head: (probe: string, model: string): string => `Sonde ${probe} · Modell ${model}`,
+    hint: 'Die Zahlen zeigen, wie verschieden das Modell auf zwei Prompts reagiert. Ob das ein Bias ist, hängt von den Paaren ab und bleibt eine menschliche Bewertung.',
+    summary: 'Zusammenfassung',
+    pairCount: (count: number): string => (count === 1 ? '1 Paar' : `${count} Paare`),
+    flipCount: (count: number): string => (count === 1 ? '1 Umschwung' : `${count} Umschwünge`),
+    meanShift: (value: string): string => `Mittlere Verschiebung: ${value}`,
+    sorting: 'Sortierung',
+    byProbe: 'Reihenfolge der Sonde',
+    byShift: 'Größte Verschiebung',
+    pairs: 'Paare',
+    pair: 'Paar',
+    promptA: 'Prompt A',
+    promptB: 'Prompt B',
+    targets: 'Ziele',
+    logRatio: 'log-Verhältnis A → B',
+    js: 'JS-Divergenz',
+    target: (text: string, pA: string, pB: string): string => `„${text}“ ${pA} → ${pB}`,
+    ratio: (a: string, b: string): string => `${a} → ${b}`,
+    flip: ' · Umschwung',
+    missing: '–',
+    errors: {
+      parse: 'Die Datei ist kein gültiges JSON.',
+      versionMissing: 'Die Datei enthält keine Berichts-Version (schemaVersion).',
+      versionUnsupported: (version: string): string =>
+        `Berichts-Version ${version} wird nicht unterstützt.`,
+      schema: 'Die Datei entspricht nicht dem Format eines Sonden-Berichts.',
+      semantic: 'Der Bericht ist inkonsistent.',
+    },
   },
   glossary: {
     entries: GLOSSARY,
     byStation: TERMS_BY_STATION,
+    byView: TERMS_BY_VIEW,
     termList: 'Begriffe',
     inApp: 'In der App: ',
     region: 'Glossar',

@@ -72,8 +72,13 @@ export function Heatmap({ matrix, tokens, name, scale, labels }: HeatmapProps) {
         ref={canvas}
         role="img"
         aria-label={name}
-        onMouseMove={(event) => setHovered(cellUnder(event, rows.length, cols))}
-        onMouseLeave={() => setHovered(null)}
+        data-swipe="ignore"
+        onPointerDown={(event) => setHovered(cellUnder(event, rows.length, cols))}
+        onPointerMove={(event) => setHovered(cellUnder(event, rows.length, cols))}
+        onPointerLeave={(event) => {
+          // Nach einem Tipp bleibt der Wert stehen (SPEC-0013 §3.3).
+          if (event.pointerType === 'mouse') setHovered(null);
+        }}
       />
       <p className="readout">{readout}</p>
     </figure>

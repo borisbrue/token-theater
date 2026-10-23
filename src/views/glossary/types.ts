@@ -42,7 +42,11 @@ export type TermId =
   | 'seed'
   | 'trace'
   | 'step'
-  | 'station';
+  | 'station'
+  | 'counterfactual'
+  | 'probe'
+  | 'jsDivergence'
+  | 'cosine';
 
 export type Glossary = Readonly<Record<TermId, GlossaryEntry>>;
 

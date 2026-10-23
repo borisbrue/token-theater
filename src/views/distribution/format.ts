@@ -13,3 +13,14 @@ export function formatInteger(value: number): string {
 export function formatPercent(probability: number): string {
   return `${formatDecimal(probability * 100, 1)} %`;
 }
+
+/**
+ * Zahl mit Vorzeichen „−“ (U+2212) und Dezimalkomma; mit `plus` ein „+“ vor positiven Werten.
+ * Was auf 0 rundet, steht ohne Vorzeichen (SPEC-0012 §3.3).
+ */
+export function formatSigned(value: number, digits: number, plus = false): string {
+  const text = formatDecimal(Math.abs(value), digits);
+  if (Number(Math.abs(value).toFixed(digits)) === 0) return text;
+  if (value < 0) return `\u2212${text}`;
+  return plus ? `+${text}` : text;
+}

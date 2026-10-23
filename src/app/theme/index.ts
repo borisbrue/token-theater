@@ -13,3 +13,6 @@ import './views.css';
 import './presentation.css';
 import './glossary.css';
 import './moe.css';
+import './compare.css';
+import './narrow.css';
+import './touch.css';

@@ -172,7 +172,8 @@ function versionText(content: string): string {
   }
 }
 
-function withLimit(lines: string[]): string[] {
+/** Höchstens 5 Detailzeilen, danach „… und n weitere“ (CON-0003 UI-03). */
+export function limitDetails(lines: string[]): string[] {
   return lines.length <= DETAIL_LIMIT
     ? lines
     : [...lines.slice(0, DETAIL_LIMIT), texts.errors.more(lines.length - DETAIL_LIMIT)];
@@ -188,12 +189,12 @@ export function describeImportError(error: TraceImportError, content: string): E
     case 'schema':
       return {
         message: texts.errors.schema,
-        details: withLimit(error.errors.map((e) => `${e.path}: ${e.message}`)),
+        details: limitDetails(error.errors.map((e) => `${e.path}: ${e.message}`)),
       };
     case 'semantic':
       return {
         message: texts.errors.semantic,
-        details: withLimit(
+        details: limitDetails(
           error.errors.map((e) => `${e.path} (${e.invariant ?? '?'}): ${e.message}`),
         ),
       };

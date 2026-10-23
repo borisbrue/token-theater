@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://token-theater.local/schemas/probe-format-v1.schema.json",
+  "title": "Token Theater: Sonde und Sonden-Bericht v1 (CON-0024)",
+  "oneOf": [{ "$ref": "#/$defs/Probe" }, { "$ref": "#/$defs/ProbeReport" }],
+  "$defs": {
+    "Slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 64 },
+    "Text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "Probability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "TokenId": { "type": "integer", "minimum": 0 },
+    "NullableNumber": { "type": ["number", "null"] },
+    "Probe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "kind", "name", "language", "description", "pairs"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "kind": { "const": "probe" },
+        "name": { "$ref": "#/$defs/Slug" },
+        "language": { "type": "string", "pattern": "^[a-z]{2}$" },
+        "description": { "type": "string", "maxLength": 2000 },
+        "pairs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/ProbePair" }
+        }
+      }
+    },
+    "ProbePair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "attribute", "a", "b", "targets"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Slug" },
+        "attribute": { "$ref": "#/$defs/Slug" },
+        "a": { "$ref": "#/$defs/Text" },
+        "b": { "$ref": "#/$defs/Text" },
+        "targets": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 8,
+          "items": { "type": "string", "minLength": 1, "maxLength": 64 }
+        }
+      }
+    },
+    "ProbeReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "probe",
+        "model",
+        "generator",
+        "createdAt",
+        "pairs",
+        "summary"
+      ],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "kind": { "const": "probe-report" },
+        "probe": { "$ref": "#/$defs/Slug" },
+        "model": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "generator": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "pairs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/ReportPair" }
+        },
+        "summary": { "$ref": "#/$defs/ReportSummary" }
+      }
+    },
+    "ReportPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "attribute",
+        "a",
+        "b",
+        "targets",
+        "logRatioA",
+        "logRatioB",
+        "flip",
+        "js",
+        "topA",
+        "topB"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/Slug" },
+        "attribute": { "$ref": "#/$defs/Slug" },
+        "a": { "$ref": "#/$defs/Text" },
+        "b": { "$ref": "#/$defs/Text" },
+        "targets": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/ReportTarget" }
+        },
+        "logRatioA": { "$ref": "#/$defs/NullableNumber" },
+        "logRatioB": { "$ref": "#/$defs/NullableNumber" },
+        "flip": { "type": ["boolean", "null"] },
+        "js": { "$ref": "#/$defs/Probability" },
+        "topA": { "$ref": "#/$defs/TopList" },
+        "topB": { "$ref": "#/$defs/TopList" }
+      }
+    },
+    "ReportTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "id", "pA", "pB"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "id": { "$ref": "#/$defs/TokenId" },
+        "pA": { "$ref": "#/$defs/Probability" },
+        "pB": { "$ref": "#/$defs/Probability" }
+      }
+    },
+    "TopList": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text", "prob"],
+        "properties": {
+          "id": { "$ref": "#/$defs/TokenId" },
+          "text": { "type": "string" },
+          "prob": { "$ref": "#/$defs/Probability" }
+        }
+      }
+    },
+    "ReportSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pairs", "flips", "meanAbsLogRatioShift"],
+      "properties": {
+        "pairs": { "type": "integer", "minimum": 1 },
+        "flips": { "type": "integer", "minimum": 0 },
+        "meanAbsLogRatioShift": { "type": ["number", "null"], "minimum": 0 }
+      }
+    }
+  }
+}

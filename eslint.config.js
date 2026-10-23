@@ -205,6 +205,33 @@ export default tseslint.config(
     },
   },
   {
+    // SPEC-0012 §3.1: probe/ wie trace/, ohne React, aus trace/ nur Typen, ohne Zufall/Zeit.
+    files: ['src/probe/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          ...REACT_IMPORTS,
+          patterns: [
+            ...REACT_IMPORTS.patterns,
+            {
+              regex: '(^@/|/)trace(/|$)',
+              allowTypeImports: true,
+              message: 'probe/ importiert aus trace/ nur Typen (import type, SPEC-0012 §3.1)',
+            },
+            {
+              regex: '(^@/|/)(views|app|engine)(/|$)',
+              message: 'probe/ importiert nicht aus views/, app/ oder engine/ (SPEC-0012 §3.1)',
+            },
+          ],
+        },
+      ],
+      'no-restricted-syntax': ['error', ...DETERMINISM_SYNTAX],
+    },
+  },
+  {
     files: ['src/**/*.tsx'],
     plugins: { react, 'react-hooks': reactHooks },
     settings: { react: { version: '18.3' } },

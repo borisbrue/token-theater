@@ -22,8 +22,15 @@ von GPT-2 rund 350 MB Gewichte; danach aus dem Browser-Cache).
   nimmt.
 - **Layer-Karte und Glossar:** Wo die Station im Modell liegt; jeder Fachbegriff lässt sich an Ort
   und Stelle nachschlagen.
+- **Vergleich:** Zwei Läufe mit verschiedenen Prompts nebeneinander („The doctor said that“ /
+  „The nurse said that“): Unterschiede der Ausgabe in Prozentpunkten, JS-Divergenz und je Layer
+  die Kosinus-Ähnlichkeit der letzten Position mit Logit-Lens; der größte Abfall ist markiert.
+- **Sonde:** Bericht des Python-Werkzeugs `probe.py` über viele Prompt-Paare. Die App misst und
+  zeigt Unterschiede; ob ein Unterschied ein Bias ist, bleibt eine menschliche Bewertung.
 - **Präsentationsmodus:** Bühne ohne Formulare, große Schrift, Bedienung per Tastatur oder
   Clicker (`p`, `Esc`, Bild ↑/↓, Pfeiltasten, Leertaste).
+- **Smartphone:** Layout ab 360 px Breite, Transportknöpfe unten fixiert, Wischen über die
+  Station schaltet weiter, Tippen zeigt Werte in Heatmaps; die Bühne passt hoch und quer.
 - **Trace exportieren und importieren** als JSON.
 
 ## Engines
@@ -64,6 +71,24 @@ npm run export-moe -- --model ibm-granite/granite-3.1-1b-a400m-base \
 ```
 
 Das Referenzmodell braucht 2,7 GB Download und läuft auf der CPU in wenigen Minuten.
+
+## Sonden und Gewichtsabgleich
+
+```sh
+# Prompt-Paare durch ein Modell schicken; den Bericht zeigt die Ansicht „Sonde“
+npm run probe -- --model distilgpt2 --probe scripts/probes/occupation-gender-en.probe.json \
+  --out occupation.probe-report.json
+
+# SHA-256 der Gewichtsdateien gegen Hugging Face prüfen (Exit 0 ok, 1 abweichend, 3 nicht prüfbar)
+npm run verify-weights -- --model distilbert/distilgpt2 --local public/models/distilgpt2
+
+# Zwei Checkpoints Tensor für Tensor vergleichen
+npm run verify-weights -- --model ./feingetunt --reference distilbert/distilgpt2 --out diff.json
+```
+
+Beispielsonden liegen in `scripts/probes/`: Geschlecht bei Berufen (Englisch, Deutsch), Herkunft
+über Vornamen und Alter, je 12 Paare mit einer Kontrolle. Die Sonden messen Unterschiede in der
+Ausgabe; sie sind kein Urteil über ein Modell.
 
 ## Entwicklung
 

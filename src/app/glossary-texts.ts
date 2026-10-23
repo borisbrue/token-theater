@@ -227,6 +227,30 @@ export const GLOSSARY: Glossary = {
       'Der Anteil, mit dem das Ergebnis eines gewählten Experten in die Mischung eingeht. Meist ergeben die Gate-Gewichte eines Tokens zusammen 100 %.',
     inApp: 'Die Prozentzahl in den umrandeten Zellen und die Balken unter „Gewählte Experten“.',
   },
+  counterfactual: {
+    term: 'Gegenfakt',
+    meaning:
+      'Ein zweiter Prompt, der sich vom ersten nur in einem Merkmal unterscheidet, etwa „nurse“ statt „doctor“. Was sich dann in der Ausgabe ändert, hängt mit diesem Merkmal zusammen.',
+    inApp: 'Lauf B in der Ansicht „Vergleich“ und Prompt B jedes Paars einer Sonde.',
+  },
+  probe: {
+    term: 'Sonde',
+    meaning:
+      'Eine Liste von Prompt-Paaren mit Zielwörtern, die man durch ein Modell schickt. Erst viele Paare zeigen, ob ein Unterschied ein Muster ist oder Zufall.',
+    inApp: 'Die Ansicht „Sonde“ zeigt den Bericht des Python-Werkzeugs.',
+  },
+  jsDivergence: {
+    term: 'JS-Divergenz',
+    meaning:
+      'Jensen-Shannon-Divergenz: ein Abstand zweier Wahrscheinlichkeitsverteilungen zwischen 0 (gleich) und 1 (ohne Überschneidung).',
+    inApp: 'Unter der Tabelle „Ausgabe“ im Vergleich und je Paar im Sonden-Bericht.',
+  },
+  cosine: {
+    term: 'Kosinus-Ähnlichkeit',
+    meaning:
+      'Wie gleich zwei Vektoren ausgerichtet sind: 1 heißt gleiche Richtung, 0 keine Gemeinsamkeit, −1 entgegengesetzt. Die Länge der Vektoren zählt nicht.',
+    inApp: 'Die Spalte „Kosinus“ der Tabelle „Layer“ im Vergleich.',
+  },
 };
 
 /** Begriffe je Station, in dieser Reihenfolge (SPEC-0010 §3.5). */
@@ -239,4 +263,10 @@ export const TERMS_BY_STATION: Readonly<Record<StationKind, readonly TermId[]>> 
   moe: ['moe', 'router', 'expert', 'gate', 'layerNorm'],
   logits: ['logit', 'softmax', 'candidate', 'vocabulary'],
   sample: ['sampling', 'greedy', 'temperature', 'topK', 'topP', 'seed'],
+};
+
+/** Begriffe je Ansicht, in dieser Reihenfolge (SPEC-0012 §3.9). */
+export const TERMS_BY_VIEW: Readonly<Record<'compare' | 'probe', readonly TermId[]>> = {
+  compare: ['counterfactual', 'cosine', 'jsDivergence', 'logitLens'],
+  probe: ['probe', 'counterfactual', 'jsDivergence'],
 };

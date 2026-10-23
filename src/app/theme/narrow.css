@@ -1,0 +1,276 @@
+/* Schmales Fenster (SPEC-0013 §3.2, §3.4): Smartphones bis 640 px; nur var(--tt-…). */
+
+@media (max-width: 640px) {
+  /* Ein fieldset ist sonst mindestens so breit wie sein Inhalt und schiebt die Seite auf. */
+  fieldset {
+    min-width: 0;
+  }
+
+  /* Datei-Eingaben haben eine feste Breite des Browsers; sie dürfen nicht über den Rand. */
+  input[type='file'] {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  :root {
+    --tt-stage-scale: 1;
+    --tt-stage-text-scale: 1;
+    /* Höhe der fixierten Transportknöpfe samt Rand. */
+    --tt-dock-height: 76px;
+  }
+
+  .app {
+    padding: 16px 16px calc(var(--tt-dock-height) + 24px + env(safe-area-inset-bottom));
+    gap: 14px;
+  }
+
+  .app header h1 {
+    font-size: 30px;
+  }
+
+  .view-switch {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .view-switch button {
+    flex: 1 1 auto;
+    padding: 0 12px;
+  }
+
+  .panel,
+  .controls {
+    padding: 14px;
+  }
+
+  /* ── Steuerung einspaltig ── */
+  .controls {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .controls > input,
+  .controls fieldset select,
+  .controls fieldset input[type='text'],
+  .controls fieldset input[type='password'],
+  .controls fieldset input[type='url'] {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .controls > label:not(.file-label) {
+    margin-top: 6px;
+  }
+
+  .controls > button {
+    justify-self: stretch;
+  }
+
+  .controls fieldset.engine {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .engine .strategy,
+  .sampling .strategy {
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .controls fieldset.sampling {
+    grid-template-columns: max-content minmax(0, 1fr) 3.5em;
+    gap: 6px 10px;
+    padding: 10px 12px;
+  }
+
+  .controls fieldset.sampling input[type='number'] {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── Kandidaten-Balken: Token, Balken, Prozent, Logit enger ── */
+  .candidate-bars li {
+    grid-template-columns: minmax(56px, 1fr) minmax(40px, 1fr) 60px 44px;
+    gap: 6px;
+    padding: 2px 4px;
+  }
+
+  .candidate-bars,
+  .lab-list {
+    font-size: 13px;
+  }
+
+  /* ── Transportknöpfe unten fixiert (Erkunden) ── */
+  .app[data-mode='explore'] .transport-buttons {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--tt-line);
+    background: var(--tt-surface);
+    box-shadow: 0 -8px 24px var(--tt-bg);
+  }
+
+  .app[data-mode='explore'] .transport-buttons .icon-button {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  .app[data-mode='explore'] .transport-buttons .play-button {
+    flex: 1.4 1 0;
+    width: auto;
+  }
+
+  /* ── Begriff als Blatt am unteren Rand ── */
+  .term-popover {
+    position: fixed;
+    top: auto;
+    left: 16px;
+    right: 16px;
+    bottom: calc(var(--tt-dock-height) + 12px + env(safe-area-inset-bottom));
+    z-index: 30;
+    width: auto;
+    max-width: none;
+    max-height: 50vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px var(--tt-bg);
+  }
+
+  .app[data-mode='presentation'] .term-popover {
+    bottom: 16px;
+  }
+
+  /* ── Bühne: Höhe 100dvh und eigenes Scrollen der Station regelt presentation.css ── */
+  .app[data-mode='presentation'] {
+    padding: 8px 10px;
+  }
+
+  .stage,
+  .stage-body {
+    gap: 8px;
+  }
+
+  .stage-title {
+    font-size: 16px;
+  }
+
+  .stage-bar button {
+    padding: 0 10px;
+  }
+
+  .stage .playback {
+    gap: 6px 8px;
+    padding: 8px;
+  }
+
+  .stage .transport-row {
+    gap: 6px 12px;
+  }
+
+  .stage-position {
+    font-size: 13px;
+  }
+
+  /* Auf der schmalen Bühne: Knöpfe in einer Zeile, Tempo kompakt darunter (Kurzbefehle blendet
+     presentation.css auf der Bühne immer aus). */
+  .stage .tempo-button {
+    padding: 0 8px;
+  }
+
+  .stage .transport-row {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+
+  .stage .transport-buttons {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+
+  .stage .tempo .label {
+    display: none;
+  }
+
+  .stage .transport-buttons .icon-button,
+  .stage .transport-buttons .play-button {
+    flex: 1 1 0;
+    width: auto;
+    height: 44px;
+  }
+}
+
+/* Niedriges Fenster (Querformat): Bühne kompakter (SPEC-0013 §3.4). */
+@media (max-height: 500px) {
+  :root {
+    --tt-stage-scale: 1;
+    --tt-stage-text-scale: 1;
+  }
+
+  .app[data-mode='presentation'] {
+    padding: 6px 12px;
+  }
+
+  .stage-title {
+    font-size: 16px;
+  }
+
+  .stage-position {
+    font-size: 13px;
+  }
+
+  .stage .token {
+    padding: 2px 8px;
+  }
+
+  .stage .station-view .station-map {
+    margin-bottom: 4px;
+  }
+
+  .stage,
+  .stage-body {
+    gap: 6px;
+  }
+
+  .stage .token-stream {
+    max-height: 64px;
+    padding: 6px 10px;
+    overflow-y: auto;
+  }
+
+  /* Oben Knöpfe und Tempo, darunter Zeitleiste und Stationsleiste; die Stationsleiste scrollt. */
+  .stage .playback {
+    padding: 6px 10px;
+  }
+
+  .stage .tempo .label {
+    display: none;
+  }
+
+  .stage .transport-row {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+  }
+
+  .stage .timeline {
+    flex: 0 0 auto;
+  }
+
+  .stage .station-strip {
+    flex: 1 1 0;
+  }
+
+  .stage .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .stage .play-button {
+    height: 44px;
+  }
+}

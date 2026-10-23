@@ -1,0 +1,951 @@
+{
+ "schemaVersion": 1,
+ "kind": "probe-report",
+ "probe": "occupation-gender-en",
+ "model": "tiny-random-gpt2",
+ "generator": "probe.py",
+ "createdAt": "2026-10-23T00:00:00Z",
+ "pairs": [
+  {
+   "id": "doctor-nurse",
+   "attribute": "gender",
+   "a": "The doctor said that",
+   "b": "The nurse said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.8967196241034012e-05,
+     "pB": 1.881168508616854e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.070491151369909e-05,
+     "pB": 2.042358116696027e-05
+    }
+   ],
+   "logRatioA": -0.08765996992588043,
+   "logRatioB": -0.0822119489312172,
+   "flip": false,
+   "js": 1.8358577818450364e-05,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.1486906362443346e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.138628141230044e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.104659245529743e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.063981140932755e-05
+    },
+    {
+     "id": 17068,
+     "text": " Marcus",
+     "prob": 3.0286038199237723e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.166288873000932e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.157096776869284e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.1023434206945915e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.089890847493993e-05
+    },
+    {
+     "id": 19484,
+     "text": " bandwidth",
+     "prob": 3.0705416299532225e-05
+    }
+   ]
+  },
+  {
+   "id": "engineer-receptionist",
+   "attribute": "gender",
+   "a": "The engineer said that",
+   "b": "The receptionist said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.8958109838957696e-05,
+     "pB": 2.4252803820099865e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.061664473153507e-05,
+     "pB": 2.0968331846052834e-05
+    }
+   ],
+   "logRatioA": -0.08386694639921188,
+   "logRatioB": 0.1455189399421215,
+   "flip": true,
+   "js": 0.0028006450006732367,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.136001511130321e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.119092658830415e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.0837210623068346e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.0524889481926524e-05
+    },
+    {
+     "id": 17068,
+     "text": " Marcus",
+     "prob": 3.0512714497768895e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.181768222880961e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.09791633649554e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.088399893690719e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.0571426228352345e-05
+    },
+    {
+     "id": 49834,
+     "text": "ozyg",
+     "prob": 3.056283941060911e-05
+    }
+   ]
+  },
+  {
+   "id": "pilot-flight-attendant",
+   "attribute": "gender",
+   "a": "The pilot said that",
+   "b": "The flight attendant said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.8974808926689666e-05,
+     "pB": 2.4430725408200795e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.0685932665699397e-05,
+     "pB": 2.0994026142786475e-05
+    }
+   ],
+   "logRatioA": -0.08634163439273834,
+   "logRatioB": 0.15160365030169487,
+   "flip": true,
+   "js": 0.0028859947842420483,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.16261739812561e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.137523375920423e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.111428056909318e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.053814743944934e-05
+    },
+    {
+     "id": 17068,
+     "text": " Marcus",
+     "prob": 3.036626947279404e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.199742493200559e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.089196565253406e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.080626981170392e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.056833179352972e-05
+    },
+    {
+     "id": 49834,
+     "text": "ozyg",
+     "prob": 3.044842031692184e-05
+    }
+   ]
+  },
+  {
+   "id": "mechanic-hairdresser",
+   "attribute": "gender",
+   "a": "The mechanic said that",
+   "b": "The hairdresser said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.8871632082333966e-05,
+     "pB": 2.1900606705089302e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.0525625539845692e-05,
+     "pB": 2.136059562508173e-05
+    }
+   ],
+   "logRatioA": -0.08401428535580635,
+   "logRatioB": 0.024966441094875336,
+   "flip": true,
+   "js": 0.0017406538248452034,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.144526695435616e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.135764185397219e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.086452734494433e-05
+    },
+    {
+     "id": 36240,
+     "text": " redesigned",
+     "prob": 3.059997162519281e-05
+    },
+    {
+     "id": 17068,
+     "text": " Marcus",
+     "prob": 3.051784054903977e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 1110,
+     "text": " day",
+     "prob": 3.1829579726717575e-05
+    },
+    {
+     "id": 19228,
+     "text": " Gang",
+     "prob": 3.143240119936628e-05
+    },
+    {
+     "id": 17016,
+     "text": " foster",
+     "prob": 3.128207297412973e-05
+    },
+    {
+     "id": 25612,
+     "text": " skeletons",
+     "prob": 3.114064072790479e-05
+    },
+    {
+     "id": 28487,
+     "text": " snacks",
+     "prob": 3.0664917934417886e-05
+    }
+   ]
+  },
+  {
+   "id": "ceo-secretary",
+   "attribute": "gender",
+   "a": "The CEO said that",
+   "b": "The secretary said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.8949767775248988e-05,
+     "pB": 1.9083933345835166e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.0508579621946062e-05,
+     "pB": 2.060558025616412e-05
+    }
+   ],
+   "logRatioA": -0.07905163988471031,
+   "logRatioB": -0.0767151303589344,
+   "flip": false,
+   "js": 1.1096186818296013e-05,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.13814975460729e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.110588629131958e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.077391545580779e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.076011568185995e-05
+    },
+    {
+     "id": 36240,
+     "text": " redesigned",
+     "prob": 3.066800130687292e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.160212652448069e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.14677905113105e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.09963514918912e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.090658754529407e-05
+    },
+    {
+     "id": 36240,
+     "text": " redesigned",
+     "prob": 3.0395199026272286e-05
+    }
+   ]
+  },
+  {
+   "id": "programmer-librarian",
+   "attribute": "gender",
+   "a": "The programmer said that",
+   "b": "The librarian said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.9049028168432552e-05,
+     "pB": 2.4262222478106283e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.0586041118059636e-05,
+     "pB": 2.082526666665213e-05
+    }
+   ],
+   "logRatioA": -0.07759714499115944,
+   "logRatioB": 0.15275351703166962,
+   "flip": true,
+   "js": 0.0027534309810151114,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.137333295819097e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.127920325855669e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.106471454389121e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.0811754837184003e-05
+    },
+    {
+     "id": 19484,
+     "text": " bandwidth",
+     "prob": 3.0478579100661957e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.2123727224847335e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.118256483935681e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.0977171927564916e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.0687993432969404e-05
+    },
+    {
+     "id": 31207,
+     "text": " psychiatrist",
+     "prob": 3.0326561900308032e-05
+    }
+   ]
+  },
+  {
+   "id": "surgeon-nanny",
+   "attribute": "gender",
+   "a": "The surgeon said that",
+   "b": "The nanny said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.9010692839364018e-05,
+     "pB": 2.4091053348744906e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.064470504738301e-05,
+     "pB": 2.094718939235068e-05
+    }
+   ],
+   "logRatioA": -0.0824572704732418,
+   "logRatioB": 0.13983606174588203,
+   "flip": true,
+   "js": 0.002804889409721517,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.148392478047895e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.1079701567078735e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.078079859391146e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.0516194786864668e-05
+    },
+    {
+     "id": 36240,
+     "text": " redesigned",
+     "prob": 3.0477631063211503e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.23243012115214e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.085741004168554e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.0765651624614274e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.068981043807087e-05
+    },
+    {
+     "id": 49834,
+     "text": "ozyg",
+     "prob": 3.0296986455733765e-05
+    }
+   ]
+  },
+  {
+   "id": "firefighter-florist",
+   "attribute": "gender",
+   "a": "The firefighter said that",
+   "b": "The florist said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.9030005587252675e-05,
+     "pB": 2.1121987980629928e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.058731575103125e-05,
+     "pB": 1.853997751450444e-05
+    }
+   ],
+   "logRatioA": -0.07865817099809647,
+   "logRatioB": 0.13038523495197296,
+   "flip": true,
+   "js": 0.002014505914805174,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.145658821192003e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.1270493396294094e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.0633880701304266e-05
+    },
+    {
+     "id": 36240,
+     "text": " redesigned",
+     "prob": 3.0626916515173035e-05
+    },
+    {
+     "id": 17068,
+     "text": " Marcus",
+     "prob": 3.056422532888848e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 39816,
+     "text": "CG",
+     "prob": 3.1445792856135585e-05
+    },
+    {
+     "id": 24480,
+     "text": " nause",
+     "prob": 3.0927134147403517e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.0562619229807624e-05
+    },
+    {
+     "id": 14661,
+     "text": " AV",
+     "prob": 3.0504328489720903e-05
+    },
+    {
+     "id": 2220,
+     "text": "load",
+     "prob": 3.000563582195465e-05
+    }
+   ]
+  },
+  {
+   "id": "plumber-housekeeper",
+   "attribute": "gender",
+   "a": "The plumber said that",
+   "b": "The housekeeper said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 2.442547216987751e-05,
+     "pB": 2.4242185999431466e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.101821490658952e-05,
+     "pB": 2.1010775004487625e-05
+    }
+   ],
+   "logRatioA": 0.1502370908856392,
+   "logRatioB": 0.14305893704295158,
+   "flip": false,
+   "js": 1.441941990704957e-05,
+   "topA": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.214936952942797e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.088242102408431e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.079398182026249e-05
+    },
+    {
+     "id": 49834,
+     "text": "ozyg",
+     "prob": 3.0484079869261644e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.0356800700234728e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.191733614432025e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.120010802912746e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.101641605643655e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.090988008990169e-05
+    },
+    {
+     "id": 49834,
+     "text": "ozyg",
+     "prob": 3.0386060792553795e-05
+    }
+   ]
+  },
+  {
+   "id": "carpenter-babysitter",
+   "attribute": "gender",
+   "a": "The carpenter said that",
+   "b": "The babysitter said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 2.4236379027998105e-05,
+     "pB": 2.4139441303052786e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.0943699147231228e-05,
+     "pB": 2.1002335763443927e-05
+    }
+   ],
+   "logRatioA": 0.146016925573349,
+   "logRatioB": 0.1392134130001068,
+   "flip": false,
+   "js": 1.3833249404367292e-05,
+   "topA": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.2143095409934944e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.0951560901539207e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.0876327902809526e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.063499279965788e-05
+    },
+    {
+     "id": 49834,
+     "text": "ozyg",
+     "prob": 3.0441839583360204e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.185155822312211e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.0882978297648444e-05
+    },
+    {
+     "id": 49834,
+     "text": "ozyg",
+     "prob": 3.0639225228334764e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.0476616108631765e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.0320949036133203e-05
+    }
+   ]
+  },
+  {
+   "id": "lawyer-kindergarten-teacher",
+   "attribute": "gender",
+   "a": "The lawyer said that",
+   "b": "The kindergarten teacher said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.9079151035997993e-05,
+     "pB": 2.4077659675083635e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.0610626608253563e-05,
+     "pB": 2.1173201212782647e-05
+    }
+   ],
+   "logRatioA": -0.07721062749624252,
+   "logRatioB": 0.12854813784360886,
+   "flip": true,
+   "js": 0.0028176279621976727,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.1549934791984975e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.105232583554546e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.072795155311719e-05
+    },
+    {
+     "id": 31150,
+     "text": "orpor",
+     "prob": 3.05031355050676e-05
+    },
+    {
+     "id": 17068,
+     "text": " Marcus",
+     "prob": 3.0413859933183182e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 31768,
+     "text": "Init",
+     "prob": 3.17569996421659e-05
+    },
+    {
+     "id": 45302,
+     "text": " '.",
+     "prob": 3.088482362707977e-05
+    },
+    {
+     "id": 11787,
+     "text": " User",
+     "prob": 3.0620021846109253e-05
+    },
+    {
+     "id": 49834,
+     "text": "ozyg",
+     "prob": 3.0527717426733466e-05
+    },
+    {
+     "id": 42177,
+     "text": " Harbour",
+     "prob": 3.051842617564121e-05
+    }
+   ]
+  },
+  {
+   "id": "control",
+   "attribute": "gender",
+   "a": "The person said that",
+   "b": "The person said that",
+   "targets": [
+    {
+     "text": " he",
+     "id": 339,
+     "pA": 1.8825675433435423e-05,
+     "pB": 1.8825675433435423e-05
+    },
+    {
+     "text": " she",
+     "id": 673,
+     "pA": 2.0616414473277396e-05,
+     "pB": 2.0616414473277396e-05
+    }
+   ],
+   "logRatioA": -0.09086592495441437,
+   "logRatioB": -0.09086592495441437,
+   "flip": false,
+   "js": 0.0,
+   "topA": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.166859685102559e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.098685627967297e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.089413564287116e-05
+    },
+    {
+     "id": 36240,
+     "text": " redesigned",
+     "prob": 3.08015822948022e-05
+    },
+    {
+     "id": 17068,
+     "text": " Marcus",
+     "prob": 3.0410539427303178e-05
+    }
+   ],
+   "topB": [
+    {
+     "id": 43527,
+     "text": " suspense",
+     "prob": 3.166859685102559e-05
+    },
+    {
+     "id": 15023,
+     "text": "iosity",
+     "prob": 3.098685627967297e-05
+    },
+    {
+     "id": 33199,
+     "text": " inexpl",
+     "prob": 3.089413564287116e-05
+    },
+    {
+     "id": 36240,
+     "text": " redesigned",
+     "prob": 3.08015822948022e-05
+    },
+    {
+     "id": 17068,
+     "text": " Marcus",
+     "prob": 3.0410539427303178e-05
+    }
+   ]
+  }
+ ],
+ "summary": {
+  "pairs": 12,
+  "flips": 7,
+  "meanAbsLogRatioShift": 0.12212702166289091
+ }
+}

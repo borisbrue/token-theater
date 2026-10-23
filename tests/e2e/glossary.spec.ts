@@ -3,7 +3,8 @@
  * .sdd/contracts/behavior/glossary-ui.feature (Szenariogrundriss: ein Test je Beispiel),
  * Testname = Szenariotitel. Das GPT-2-Testmodell liefert page.route vom eigenen Origin.
  * „Glossar vollständig“ läuft ohne Browser gegen texts und parseTerms (SPEC-0010 §3.10); seit
- * SPEC-0011 mit den MoE-Begriffen (§3.7) und den Texten der Station moe (§3.6).
+ * SPEC-0011 mit den MoE-Begriffen (§3.7) und den Texten der Station moe (§3.6), seit SPEC-0012
+ * mit den Begriffen der Ansichten „Vergleich“ und „Sonde“ (§3.9).
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +31,7 @@ const here = (path: string): string => fileURLToPath(new URL(path, import.meta.u
 const FEATURE_PATH = here('../../.sdd/contracts/behavior/glossary-ui.feature');
 const SPEC_PATH = here('../../.sdd/specs/SPEC-0010-layer-map-and-glossary.md');
 const MOE_SPEC_PATH = here('../../.sdd/specs/SPEC-0011-moe-routing.md');
+const COMPARE_SPEC_PATH = here('../../.sdd/specs/SPEC-0012-comparison-mode-and-bias-probe.md');
 const REFERENCE_PATH = here('../fixtures/glossary/texts-before-spec-0010.json');
 const fixture = (name: string): Buffer => readFileSync(here(`../fixtures/gpt2/${name}`));
 
@@ -521,7 +523,7 @@ test(T.view, async ({ page }) => {
   await expect(glossaryButton).toHaveAttribute('aria-pressed', 'true');
   const region = page.getByRole('region', { name: 'Glossar', exact: true });
   const terms = region.locator('dt');
-  await expect(terms).toHaveCount(37);
+  await expect(terms).toHaveCount(41);
   const names = await terms.allTextContents();
   expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, 'de')));
   expect(names[0]).toBe('Attention');
@@ -542,8 +544,12 @@ test(T.complete, () => {
   const entries = texts.glossary.entries as Readonly<
     Record<string, { term: string; meaning: string; inApp: string }>
   >;
-  const table = [...specTable('### 3.4 Glossar'), ...specTable('### 3.7 Glossar', MOE_SPEC_PATH)];
-  expect(table).toHaveLength(37);
+  const table = [
+    ...specTable('### 3.4 Glossar'),
+    ...specTable('### 3.7 Glossar', MOE_SPEC_PATH),
+    ...specTable('### 3.9 Glossar', COMPARE_SPEC_PATH),
+  ];
+  expect(table).toHaveLength(41);
   expect(Object.keys(entries).sort()).toEqual(table.map((row) => row[0]).sort());
   for (const [id, term, meaning, inApp] of table) {
     expect(entries[id ?? ''], `Eintrag ${id}`).toEqual({ term, meaning, inApp });
@@ -578,7 +584,12 @@ test(T.complete, () => {
   }
 
   const byStation = texts.glossary.byStation as Readonly<Record<StationKind, readonly string[]>>;
-  const listed = new Set(Object.values(byStation).flat());
+  const byView = texts.glossary.byView as Readonly<Record<'compare' | 'probe', readonly string[]>>;
+  expect(byView, 'Begriffe je Ansicht (SPEC-0012 §3.9)').toEqual({
+    compare: ['counterfactual', 'cosine', 'jsDivergence', 'logitLens'],
+    probe: ['probe', 'counterfactual', 'jsDivergence'],
+  });
+  const listed = new Set([...Object.values(byStation).flat(), ...Object.values(byView).flat()]);
   for (const id of ids) expect(listed.has(id), `Begriff ${id} in einer Liste`).toBe(true);
   expect(byStation.moe, 'Begriffe moe (SPEC-0011 §3.7)').toEqual([
     'moe',

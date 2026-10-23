@@ -5,7 +5,7 @@ title: "Layer map and glossary UI"
 type: behavior
 format: gherkin
 spec: SPEC-0010
-version: 0.2.0
+version: 0.3.0
 status: approved
 artifact: ".sdd/contracts/behavior/glossary-ui.feature"
 tests: ["TST-0023"]
@@ -25,15 +25,16 @@ was die Ansicht „Glossar“ zeigt.
 ## Garantien
 
 Die Szenarien in `.sdd/contracts/behavior/glossary-ui.feature` sind verbindlich. Die Texte des
-Glossars stehen wörtlich in SPEC-0010 §3.4 und (seit v0.2.0) SPEC-0011 §3.7.
+Glossars stehen wörtlich in SPEC-0010 §3.4, (seit v0.2.0) SPEC-0011 §3.7 und (seit v0.3.0) SPEC-0012 §3.9.
 
 ## Invarianten
 
 - **GL-01 Text bleibt:** Ohne Markierungen ist jeder Erklärsatz und jeder Text „Mehr dazu“ Wort
   für Wort der aus SPEC-0009; eine geschlossene Erklärung ist nicht im DOM (CON-0020 bleibt
   erfüllt).
-- **GL-02 Vollständig:** 37 Begriffe (33 aus SPEC-0010, 4 aus SPEC-0011); jede Markierung verweist auf einen davon; jeder steht in
-  mindestens einer Liste „Begriffe“.
+- **GL-02 Vollständig:** 41 Begriffe (33 aus SPEC-0010, 4 aus SPEC-0011, 4 aus SPEC-0012); jede
+  Markierung verweist auf einen davon; jeder steht in mindestens einer Liste „Begriffe“ einer
+  Station oder einer Ansicht („Vergleich“, „Sonde“).
 - **GL-03 Eine Erklärung:** Höchstens eine Erklärung ist offen; Fokusverlust schließt sie.
 - **GL-04 Esc zuerst lokal:** `Esc` bei offener Erklärung schließt nur sie, auch auf der Bühne.
 - **GL-05 Karte aus dem Trace:** Die Layer-Karte entsteht aus den Stationen des Schritts, nicht
@@ -51,3 +52,4 @@ Glossars stehen wörtlich in SPEC-0010 §3.4 und (seit v0.2.0) SPEC-0011 §3.7.
 |---|---|---|
 | 2026-10-22 | 0.1.0 | Erstfassung |
 | 2026-10-23 | 0.2.0 | SPEC-0011: vier MoE-Begriffe, 37 statt 33 |
+| 2026-10-23 | 0.3.0 | SPEC-0012: Gegenfakt, Sonde, JS-Divergenz, Kosinus-Ähnlichkeit; 41; Listen je Ansicht |

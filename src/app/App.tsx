@@ -4,7 +4,10 @@ import { createPlaybackController } from '../playback/controller';
 import { timeoutScheduler } from '../playback/scheduler';
 import { createPlaybackStore, type PlaybackStore } from '../playback/store';
 import type { Trace } from '../trace/types';
+import type { ProbeReport } from '../probe/types';
+import { CompareView } from '../views/compare/CompareView';
 import { GlossaryView } from '../views/glossary/GlossaryView';
+import { ProbeView } from '../views/probe/ProbeView';
 import { StepList } from '../views/step-list/StepList';
 import {
   DEFAULT_MAX_TOKENS,
@@ -17,6 +20,7 @@ import {
   normalizeMaxTokens,
   type ErrorView,
 } from './trace-actions';
+import { importReport } from './probe-actions';
 import { PresentationStage } from './presentation/PresentationStage';
 import { Player } from './player/Player';
 import {
@@ -56,11 +60,38 @@ function loadText(progress: WeightsProgress): string {
 const GREEDY: Strategy = 'greedy';
 const RANDOM: Strategy = 'sample';
 
-type View = 'run' | 'tokenizer' | 'glossary';
+type View = 'run' | 'tokenizer' | 'glossary' | 'compare' | 'probe';
 /** Erkunden oder Bühne (SPEC-0009 §3.2); nicht gespeichert. */
 type Mode = 'explore' | 'presentation';
 
 const STEP_LABELS = { steps: texts.steps, step: texts.step, layer: texts.layer };
+
+const COMPARE_TERMS = {
+  entries: texts.glossary.entries,
+  inApp: texts.glossary.inApp,
+  termList: texts.glossary.termList,
+  ids: texts.glossary.byView.compare,
+};
+
+const PROBE_TERMS = { ...COMPARE_TERMS, ids: texts.glossary.byView.probe };
+
+/** Knöpfe der Gruppe „Ansicht“ in dieser Reihenfolge (SPEC-0012 §3.3). */
+const VIEWS: readonly (readonly [View, string])[] = [
+  ['run', texts.views.run],
+  ['tokenizer', texts.views.tokenizer],
+  ['glossary', texts.views.glossary],
+  ['compare', texts.views.compare],
+  ['probe', texts.views.probe],
+];
+
+/** Dateiinhalt als Text; null, wenn die Datei nicht lesbar ist. */
+async function readText(file: File): Promise<string | null> {
+  try {
+    return await file.text();
+  } catch {
+    return null;
+  }
+}
 
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -75,7 +106,13 @@ export function App() {
   const [playback] = useState(createAppPlayback);
   const [prompt, setPrompt] = useState('');
   const [maxTokens, setMaxTokens] = useState(String(DEFAULT_MAX_TOKENS));
-  const [trace, setTrace] = useState<Trace | null>(null);
+  const [trace, setTraceState] = useState<Trace | null>(null);
+  /** Lauf B der Ansicht „Vergleich“, Fehler seines Imports und gewählter Schritt (SPEC-0012). */
+  const [compareTrace, setCompareTrace] = useState<Trace | null>(null);
+  const [compareError, setCompareError] = useState<ErrorView | null>(null);
+  const [compareStep, setCompareStep] = useState(0);
+  const [report, setReport] = useState<ProbeReport | null>(null);
+  const [reportError, setReportError] = useState<ErrorView | null>(null);
   const [error, setError] = useState<ErrorView | null>(null);
   const [busy, setBusy] = useState(false);
   const [view, setView] = useState<View>('run');
@@ -101,6 +138,12 @@ export function App() {
   useEffect(() => {
     saveSettings(remote);
   }, [remote]);
+
+  // Mediator (SPEC-0012 §3.3): ein neuer Lauf A oder B setzt die Schrittwahl des Vergleichs zurück.
+  const setTrace = useCallback((next: Trace | null) => {
+    setTraceState(next);
+    setCompareStep(0);
+  }, []);
 
   // Manifest erst laden, wenn GPT-2 gewählt wird (SPEC-0006 §3.8).
   useEffect(() => {
@@ -225,6 +268,37 @@ export function App() {
     }
   }
 
+  async function onCompareImport(file: File) {
+    const content = await readText(file);
+    if (content === null) {
+      setCompareError({ message: texts.errors.readFile, details: [] });
+      return;
+    }
+    const result = importTrace(content);
+    if (!result.ok) {
+      setCompareError(result.error);
+      return;
+    }
+    setCompareTrace(result.trace);
+    setCompareStep(0);
+    setCompareError(null);
+  }
+
+  async function onReportImport(file: File) {
+    const content = await readText(file);
+    if (content === null) {
+      setReportError({ message: texts.errors.readFile, details: [] });
+      return;
+    }
+    const result = importReport(content);
+    if (result.ok) {
+      setReport(result.report);
+      setReportError(null);
+    } else {
+      setReportError(result.error);
+    }
+  }
+
   if (mode === 'presentation') {
     return (
       <main className="app" data-mode="presentation">
@@ -245,29 +319,36 @@ export function App() {
       </header>
 
       <div role="group" aria-label={texts.views.group} className="view-switch">
-        <button type="button" aria-pressed={view === 'run'} onClick={() => setView('run')}>
-          {texts.views.run}
-        </button>
-        <button
-          type="button"
-          aria-pressed={view === 'tokenizer'}
-          onClick={() => setView('tokenizer')}
-        >
-          {texts.views.tokenizer}
-        </button>
-        <button
-          type="button"
-          aria-pressed={view === 'glossary'}
-          onClick={() => setView('glossary')}
-        >
-          {texts.views.glossary}
-        </button>
+        {VIEWS.map(([id, label]) => (
+          <button key={id} type="button" aria-pressed={view === id} onClick={() => setView(id)}>
+            {label}
+          </button>
+        ))}
       </div>
 
       {view === 'tokenizer' ? (
         <TokenizerWorkbench />
       ) : view === 'glossary' ? (
         <GlossaryView labels={texts.glossary} />
+      ) : view === 'compare' ? (
+        <CompareView
+          a={trace}
+          b={compareTrace}
+          step={compareStep}
+          onStep={setCompareStep}
+          onImport={(file) => void onCompareImport(file)}
+          error={compareError}
+          labels={texts.compare}
+          terms={COMPARE_TERMS}
+        />
+      ) : view === 'probe' ? (
+        <ProbeView
+          report={report}
+          onImport={(file) => void onReportImport(file)}
+          error={reportError}
+          labels={texts.probe}
+          terms={PROBE_TERMS}
+        />
       ) : (
         <>
           <form className="controls" noValidate onSubmit={(e) => void onGenerate(e)}>

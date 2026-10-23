@@ -1,0 +1,177 @@
+/* Ansichten „Vergleich“ und „Sonde“ (SPEC-0012); nur var(--tt-…). */
+
+.compare,
+.probe {
+  display: grid;
+  /* Die Spalte wächst nicht mit breiten Tabellen; die scrollen in .compare-scroll. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+}
+
+.compare > *,
+.probe > * {
+  margin: 0;
+}
+
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.compare-runs,
+.probe-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  padding: 0;
+  list-style: none;
+  color: var(--tt-text-soft);
+  font-family: var(--tt-font-mono);
+  font-size: 13px;
+}
+
+.compare-chosen,
+.probe-head {
+  color: var(--tt-cyan);
+  font-family: var(--tt-font-display);
+  font-weight: 600;
+}
+
+/* ── Tabellen ── */
+.compare-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.compare-table {
+  border-collapse: collapse;
+  font-family: var(--tt-font-mono);
+  font-size: 12px;
+}
+
+.compare-table caption {
+  margin: 4px 0;
+  color: var(--tt-text-soft);
+  font-family: var(--tt-font-body);
+  font-size: 13px;
+  text-align: left;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 3px 10px;
+  border-bottom: 1px solid var(--tt-line);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.compare-table th[scope='col'] {
+  color: var(--tt-text-muted);
+  font-weight: 500;
+}
+
+.compare-table th[scope='row'] {
+  color: var(--tt-text);
+  font-weight: 500;
+  text-align: left;
+}
+
+.compare-table td.up {
+  color: var(--tt-mint);
+}
+
+.compare-table td.down {
+  color: var(--tt-error);
+}
+
+.compare-output tr.chosen-a th,
+.compare-output tr.chosen-b th {
+  color: var(--tt-cyan);
+}
+
+.compare-layers td:nth-of-type(1) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-bar {
+  display: block;
+  width: 80px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--tt-surface-2);
+  overflow: hidden;
+}
+
+.compare-bar span {
+  display: block;
+  height: 100%;
+  background: var(--tt-gradient-data);
+}
+
+.compare-layers tr.largest-drop th,
+.compare-layers tr.largest-drop td {
+  background: var(--tt-tint-error);
+}
+
+.compare-drop {
+  color: var(--tt-error);
+  font-weight: 600;
+}
+
+.compare-js {
+  color: var(--tt-text-soft);
+}
+
+/* ── Sonden-Bericht ── */
+.probe-hint {
+  max-width: 820px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--tt-cyan);
+  background: var(--tt-tint-cyan);
+}
+
+.probe-table td:nth-of-type(1),
+.probe-table td:nth-of-type(2) {
+  max-width: 260px;
+  white-space: normal;
+  text-align: left;
+  font-family: var(--tt-font-body);
+}
+
+.probe-table tr.flip th {
+  color: var(--tt-mint);
+}
+
+.probe-targets {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.probe-bars {
+  display: grid;
+  gap: 2px;
+  width: 120px;
+}
+
+.probe-bars span {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.probe-bar-a {
+  background: var(--tt-cyan);
+}
+
+.probe-bar-b {
+  background: var(--tt-violet);
+}

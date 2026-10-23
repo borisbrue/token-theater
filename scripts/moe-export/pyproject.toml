@@ -1,12 +1,14 @@
 [project]
 name = "moe-export"
 version = "0.1.0"
-description = "Exportiert Token-Theater-Traces aus Mixture-of-Experts-Modellen (SPEC-0011)"
+description = "Token-Theater-Werkzeuge: MoE-Traces (SPEC-0011), Sonden und Gewichtsabgleich (SPEC-0012)"
 requires-python = ">=3.11"
 dependencies = [
   "torch>=2.5",
   "transformers>=4.46",
   "safetensors>=0.4",
+  "jsonschema>=4.23",
+  "huggingface-hub>=0.26",
 ]
 
 [dependency-groups]

@@ -34,8 +34,13 @@ export function VectorStrip({ title, values, limit, scale, labels }: VectorStrip
         ref={canvas}
         role="img"
         aria-label={labels.strip(title, values.length)}
-        onMouseMove={(event) => setHovered(cellUnder(event, 1, values.length)?.col ?? null)}
-        onMouseLeave={() => setHovered(null)}
+        data-swipe="ignore"
+        onPointerDown={(event) => setHovered(cellUnder(event, 1, values.length)?.col ?? null)}
+        onPointerMove={(event) => setHovered(cellUnder(event, 1, values.length)?.col ?? null)}
+        onPointerLeave={(event) => {
+          // Nach einem Tipp bleibt der Wert stehen (SPEC-0013 §3.3).
+          if (event.pointerType === 'mouse') setHovered(null);
+        }}
       />
       <p className="readout">
         {hovered !== null &&

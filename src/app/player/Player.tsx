@@ -24,6 +24,7 @@ import type { ViewScales } from '../../views/tensor/labels';
 import { texts } from '../texts';
 import { DATA_SCALE, DIVERGING_SCALE } from '../theme/tokens';
 import { usePlaybackKeys } from './use-playback-keys';
+import { useSwipe } from './use-swipe';
 
 const STATION_LABELS = { ...texts.station, layerMap: texts.layerMap, glossary: texts.glossary };
 /** Farbskalen aus dem Theme als Daten für die Ansichten (SPEC-0007 §3.1). */
@@ -113,6 +114,7 @@ export function Player({ playback, layout = 'explore' }: PlayerProps) {
   const info = frameInfo(state);
   const station = currentStation(state);
   usePlaybackKeys(info !== null, dispatch);
+  useSwipe(info !== null, dispatch);
   const message = useAnnouncement(state);
   const [selection, select] = useSelection(state.trace);
 

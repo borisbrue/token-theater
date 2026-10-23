@@ -1,0 +1,39 @@
+/* Grober Zeiger (SPEC-0013 §3.3): Touch-Ziele, Kurzbefehle, Wischen; nur var(--tt-…). */
+
+@media (pointer: coarse) {
+  /* Kurzbefehle gelten nur mit Tastatur. */
+  .shortcuts {
+    display: none;
+  }
+
+  /* Alle Knöpfe haben schon in global.css mindestens --tt-control (44 px) in Höhe und Breite;
+     hier nur, was Desktop-Regeln enger setzen, und die Radio-Chips. */
+  .tempo-button,
+  .timeline-step,
+  .station-button,
+  .icon-button,
+  .radio-choice .chip {
+    min-width: var(--tt-control);
+    min-height: var(--tt-control);
+  }
+
+  .engine .strategy label,
+  .sampling .strategy label {
+    min-height: var(--tt-control);
+  }
+
+  /* Senkrechtes Scrollen bleibt beim Browser, waagerecht wischen schaltet die Station. */
+  .station-view {
+    touch-action: pan-y;
+  }
+
+  /* Elemente mit eigener Geste scrollen in beide Richtungen. */
+  .station-view [data-swipe='ignore'] {
+    touch-action: pan-x pan-y;
+  }
+
+  /* Auf Heatmap und Streifen: waagerecht ziehen liest Werte, senkrecht scrollt die Seite. */
+  .station-view canvas[data-swipe='ignore'] {
+    touch-action: pan-y;
+  }
+}

@@ -74,7 +74,7 @@ function MoeView({ station, step, selection, select, labels, scales }: MoeViewPr
         onSelect={(position) => select({ position })}
         labels={labels}
       />
-      <div className="moe-scroll">
+      <div className="moe-scroll" data-swipe="ignore">
         <table className="moe-table moe-routing">
           <caption>{labels.routing}</caption>
           <ExpertHeads count={count} labels={labels} />
@@ -122,7 +122,7 @@ function MoeView({ station, step, selection, select, labels, scales }: MoeViewPr
         ))}
       </ol>
       <p className="hint">{labels.gateSum(labels.percent(sum))}</p>
-      <div className="moe-scroll">
+      <div className="moe-scroll" data-swipe="ignore">
         <table className="moe-table moe-layers">
           <caption>{labels.allLayers}</caption>
           <ExpertHeads count={count} labels={labels} />

@@ -180,7 +180,9 @@ def first(value: Any) -> torch.Tensor:
     return value[0] if isinstance(value, tuple) else value
 
 
-def install_hooks(model: nn.Module, adapter: MoeAdapter, recorder: Recorder) -> None:
+def install_hooks(model: nn.Module, adapter: MoeAdapter, recorder: Recorder) -> list[Any]:
+    """Registriert die Hooks und liefert ihre Handles zum Entfernen."""
+    handles: list[Any] = []
     for index, layer in enumerate(model.model.layers):
 
         def keep(name: str, pick=first, i: int = index):
@@ -196,19 +198,22 @@ def install_hooks(model: nn.Module, adapter: MoeAdapter, recorder: Recorder) -> 
             hidden = args[0] if args else kwargs["hidden_states"]
             recorder.layers[i].attn_in = hidden.detach()
 
-        layer.register_forward_pre_hook(keep_input, with_kwargs=True)
-        layer.input_layernorm.register_forward_hook(keep("attn_ln"))
-        layer.self_attn.q_proj.register_forward_hook(keep("q"))
-        layer.self_attn.k_proj.register_forward_hook(keep("k"))
-        layer.self_attn.v_proj.register_forward_hook(keep("v"))
-        layer.self_attn.register_forward_hook(keep("attn_out"))
-        layer.self_attn.register_forward_hook(keep("weights", pick=lambda out: out[1]))
-        layer.post_attention_layernorm.register_forward_hook(keep("moe_ln"))
-        adapter.router(layer).register_forward_hook(
-            keep("route", pick=lambda out: tuple(t.detach() for t in adapter.route(out)))
-        )
-        adapter.moe_block(layer).register_forward_hook(keep("moe_out"))
-        layer.register_forward_hook(keep("layer_out"))
+        handles += [
+            layer.register_forward_pre_hook(keep_input, with_kwargs=True),
+            layer.input_layernorm.register_forward_hook(keep("attn_ln")),
+            layer.self_attn.q_proj.register_forward_hook(keep("q")),
+            layer.self_attn.k_proj.register_forward_hook(keep("k")),
+            layer.self_attn.v_proj.register_forward_hook(keep("v")),
+            layer.self_attn.register_forward_hook(keep("attn_out")),
+            layer.self_attn.register_forward_hook(keep("weights", pick=lambda out: out[1])),
+            layer.post_attention_layernorm.register_forward_hook(keep("moe_ln")),
+            adapter.router(layer).register_forward_hook(
+                keep("route", pick=lambda out: tuple(t.detach() for t in adapter.route(out)))
+            ),
+            adapter.moe_block(layer).register_forward_hook(keep("moe_out")),
+            layer.register_forward_hook(keep("layer_out")),
+        ]
+    return handles
 
 
 def expand_kv(value: torch.Tensor, heads: int, kv_heads: int) -> torch.Tensor:
@@ -240,6 +245,19 @@ def softmax64(logits: torch.Tensor) -> torch.Tensor:
 
 
 def record_run(model: nn.Module, tokenizer: Any, adapter: MoeAdapter, s: Settings) -> dict:
+    """Wie `record_with`; die Hooks sind danach wieder entfernt (mehrere Läufe je Modell)."""
+    recorder = Recorder()
+    handles = install_hooks(model, adapter, recorder)
+    try:
+        return record_with(model, tokenizer, adapter, s, recorder)
+    finally:
+        for handle in handles:
+            handle.remove()
+
+
+def record_with(
+    model: nn.Module, tokenizer: Any, adapter: MoeAdapter, s: Settings, recorder: Recorder
+) -> dict:
     """Generiert Schritt für Schritt mit KV-Cache und baut den Trace (Template Method)."""
     config = model.config
     heads = config.num_attention_heads
@@ -247,8 +265,6 @@ def record_run(model: nn.Module, tokenizer: Any, adapter: MoeAdapter, s: Setting
     multiplier = adapter.residual_multiplier(config)
     scaling = adapter.logits_scaling(config)
     eos = tokenizer.eos_token_id
-    recorder = Recorder()
-    install_hooks(model, adapter, recorder)
     generator = torch.Generator().manual_seed(s.seed)
 
     def to_logits(stream_row: torch.Tensor) -> torch.Tensor:
